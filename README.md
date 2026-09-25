@@ -58,7 +58,12 @@ In university project vivas and technical defenses, students often run into the 
 
 ---
 
-### 1. 🌐 Interactive System Flow & Architecture Tracer (`/architecture`)
+### 1. 🌐 Interactive System Flow & Multi-Perspective Architecture (`/architecture`)
+
+- 📐 **3 Architectural Perspectives (Perspective Switcher)**:
+  - 🌊 **Data Flow Pipeline**: Sequential end-to-end request lifecycle from client ingress to database persistence and client response envelopes.
+  - 🏗️ **Modular Layered Architecture**: Structural N-tier isolation using clean subgraphs for Presentation, Ingress Gateway, Business Domain Core, and Persistence & Cache tiers.
+  - 🛡️ **Security & Fault Boundaries**: Zero-Trust defense perimeter mapping rate limiting, TLS termination, cryptographic JWT validation, input schema assertions, and compensating ACID rollback sinks.
 
 - 🎮 **Step-by-Step Flow Tracer (Live Simulation)**:
   - **Happy Path Flow**: Watch a normal request travel from Client $\rightarrow$ API Gateway $\rightarrow$ Validation Guard $\rightarrow$ Domain Service $\rightarrow$ Database $\rightarrow$ Response. Every step lights up with glowing rings and live payload data tickers.
@@ -71,9 +76,9 @@ In university project vivas and technical defenses, students often run into the 
   - **Neural Voice Playback**: Listen to the defense spoken aloud using Microsoft Edge-TTS with animated sound wave visualizers.
 
 - 🔍 **Click-to-Inspect Node Code Drawer**:
-  - Click **any node** in the diagram to slide out its dedicated inspector.
-  - **Zero Code Repetition**: Each node displays its own distinct code snippet (Client has frontend fetch, Gateway has routing, Auth has schema validation, Database has queries, etc.).
-  - Shows accurate **Big-O Time Complexity**, **Space Complexity**, and runtime failure points.
+  - Click **any node** across **all 3 diagram perspectives** to slide out its dedicated inspector.
+  - **Zero Code Repetition**: Each node displays its own distinct code snippet (Client has frontend fetch, Gateway has routing, Auth has schema validation, Database has queries, Rate Limiter has token buckets, etc.).
+  - Shows accurate **Big-O Time Complexity**, **Space Complexity**, failure points, and senior defense scripts.
 
 ---
 

@@ -2526,7 +2526,9 @@ function toggleArchCanvasTheme() {
   }
 
   // Re-render current diagram with updated theme if available
-  if (VivaState.projectScan?.mermaid_diagram) {
+  if (typeof switchArchDiagramView === "function") {
+    switchArchDiagramView(currentArchDiagramView || "pipeline");
+  } else if (VivaState.projectScan?.mermaid_diagram) {
     renderMermaidDiagram(VivaState.projectScan.mermaid_diagram, "arch-mermaid-container");
   }
 }
@@ -3296,6 +3298,263 @@ async function triggerArchDeepScan(forceRefresh = false) {
 }
 window.triggerArchDeepScan = triggerArchDeepScan;
 
+/* ==========================================================================
+   MULTI-PERSPECTIVE ARCHITECTURAL DIAGRAMS (Pipeline, Layered, Security)
+   ========================================================================== */
+let currentArchDiagramView = "pipeline";
+
+function generateLayeredArchitecture(scanData, sourceCode) {
+  const src = sourceCode || "";
+  const isML = src.includes("RandomForestClassifier") || src.includes("train_test_split") || src.includes("sklearn") || (scanData?.architecture_pattern || "").toLowerCase().includes("machine learning");
+  const isSupabase = src.includes("supabase") || src.includes("createClient") || (scanData?.architecture_pattern || "").toLowerCase().includes("supabase");
+
+  if (isML) {
+    return `flowchart TD
+  classDef startNode fill:#fed7aa,stroke:#f97316,stroke-width:2px,color:#7c2d12,font-weight:bold,rx:8px,ry:8px;
+  classDef routerNode fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a,font-weight:bold,rx:8px,ry:8px;
+  classDef serviceNode fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#134e4a,font-weight:bold,rx:8px,ry:8px;
+  classDef dbNode fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,font-weight:bold,rx:8px,ry:8px;
+  classDef secNode fill:#fbcfe8,stroke:#db2777,stroke-width:2px,color:#831843,font-weight:bold,rx:8px,ry:8px;
+  classDef altNode fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#713f12,font-weight:bold,rx:8px,ry:8px;
+
+  subgraph IngestionTier ["📥 Tier 1: Data Ingestion & Presentation"]
+    RawDataset["📊 Raw Feature Ingestion<br/>(CSV / Tabular Feeder)"]:::startNode
+    FeatureValidator["🛡️ Feature Boundary Check<br/>(Schema & Null Assertion)"]:::altNode
+  end
+
+  subgraph PipelineTier ["⚙️ Tier 2: Transformation & Feature Engineering"]
+    StandardScalerEngine["📐 StandardScaler & Imputer<br/>(Vector Normalizer)"]:::routerNode
+    EncoderPipeline["🔠 Categorical One-Hot Encoder<br/>(Matrix Transformation)"]:::routerNode
+  end
+
+  subgraph ModelTier ["🧠 Tier 3: Statistical Ensemble & Inference Core"]
+    RandomForestEstimator["🧠 Ensemble Inference Core<br/>(RandomForest / Decision Tree)"]:::serviceNode
+    ConfidenceScorer["🌲 Multi-Tree Vote Aggregator<br/>(Bootstrap Aggregation)"]:::serviceNode
+  end
+
+  subgraph PersistenceTier ["🗄️ Tier 4: Artifact Storage & Telemetry"]
+    ModelRegistryStore[("🗄️ Pickled Model Registry<br/>(Serialized Artifacts)")]:::dbNode
+    MetricsTelemetryDB[("📈 Metrics & Telemetry Log<br/>(ROC-AUC / Precision Store)")]:::dbNode
+  end
+
+  RawDataset --> FeatureValidator
+  FeatureValidator --> StandardScalerEngine
+  StandardScalerEngine --> EncoderPipeline
+  EncoderPipeline --> RandomForestEstimator
+  RandomForestEstimator --> ConfidenceScorer
+  ConfidenceScorer --> ModelRegistryStore
+  ConfidenceScorer --> MetricsTelemetryDB`;
+  }
+
+  if (isSupabase) {
+    return `flowchart TD
+  classDef startNode fill:#fed7aa,stroke:#f97316,stroke-width:2px,color:#7c2d12,font-weight:bold,rx:8px,ry:8px;
+  classDef routerNode fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a,font-weight:bold,rx:8px,ry:8px;
+  classDef serviceNode fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#134e4a,font-weight:bold,rx:8px,ry:8px;
+  classDef dbNode fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,font-weight:bold,rx:8px,ry:8px;
+  classDef secNode fill:#fbcfe8,stroke:#db2777,stroke-width:2px,color:#831843,font-weight:bold,rx:8px,ry:8px;
+  classDef altNode fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#713f12,font-weight:bold,rx:8px,ry:8px;
+
+  subgraph PresentationTier ["💻 Tier 1: Client & Browser Tier"]
+    ClientApp["💻 Client Browser UI<br/>(DOM & Event Handlers)"]:::startNode
+    StateStore["⚡ Client Telemetry Controller<br/>(In-Memory Event Queue)"]:::startNode
+  end
+
+  subgraph EdgeTier ["🌐 Tier 2: Edge Network & Gateway Layer"]
+    APIGateway["⚡ Edge Ingress Router<br/>(HTTP Ingestion Endpoint)"]:::routerNode
+    AuthGuard["🔑 Supabase JWT & Auth Guard<br/>(Session Validation)"]:::secNode
+    ValidationEngine["🛡️ Telemetry Schema Sanitizer<br/>(Payload Type Assertion)"]:::altNode
+  end
+
+  subgraph CloudTier ["⚙️ Tier 3: BaaS Serverless & Realtime Engine"]
+    CoreService["▲ Supabase Edge Runtime<br/>(Isolate Function Worker)"]:::serviceNode
+    TransactionManager["🔄 Realtime Event Broker<br/>(Postgres Change Dispatcher)"]:::serviceNode
+  end
+
+  subgraph PersistenceTier ["🗄️ Tier 4: Managed Database & RLS Storage"]
+    DataRepository["📦 Supabase Python/JS SDK<br/>(PostgREST Client)"]:::dbNode
+    PrimaryDB[("🗄️ PostgreSQL Database<br/>(Row Level Security / WAL)")]:::dbNode
+    CacheStore[("⚡ Edge In-Memory Cache<br/>(Session & Token Store)")]:::dbNode
+  end
+
+  ClientApp --> StateStore
+  StateStore --> APIGateway
+  APIGateway --> AuthGuard
+  AuthGuard --> ValidationEngine
+  ValidationEngine --> CoreService
+  CoreService --> TransactionManager
+  TransactionManager --> DataRepository
+  DataRepository --> PrimaryDB
+  DataRepository -.-> CacheStore
+  TransactionManager -. "Realtime Stream" .-> StateStore`;
+  }
+
+  // Standard Web API / Microservices / Full-Stack Layered Architecture
+  return `flowchart TD
+  classDef startNode fill:#fed7aa,stroke:#f97316,stroke-width:2px,color:#7c2d12,font-weight:bold,rx:8px,ry:8px;
+  classDef routerNode fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a,font-weight:bold,rx:8px,ry:8px;
+  classDef serviceNode fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#134e4a,font-weight:bold,rx:8px,ry:8px;
+  classDef dbNode fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,font-weight:bold,rx:8px,ry:8px;
+  classDef secNode fill:#fbcfe8,stroke:#db2777,stroke-width:2px,color:#831843,font-weight:bold,rx:8px,ry:8px;
+  classDef altNode fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#713f12,font-weight:bold,rx:8px,ry:8px;
+
+  subgraph PresentationTier ["💻 Tier 1: Client & Presentation Layer"]
+    ClientApp["💻 Client Application UI<br/>(DOM & Event Handlers)"]:::startNode
+    StateStore["⚡ Client State Manager<br/>(Payload Dispatcher)"]:::startNode
+  end
+
+  subgraph GatewayTier ["🌐 Tier 2: Ingress & Gateway Layer"]
+    APIGateway["⚡ Ingress Router & Dispatcher<br/>(HTTP Endpoint Controller)"]:::routerNode
+    AuthGuard["🔑 JWT & RBAC Auth Guard<br/>(Identity Verification)"]:::secNode
+    ValidationEngine["🛡️ Request Schema Sanitizer<br/>(Type & Field Assertion)"]:::altNode
+  end
+
+  subgraph DomainTier ["⚙️ Tier 3: Business Domain Core"]
+    CoreService["🧠 Core Domain Engine<br/>(State Transitions & Rules)"]:::serviceNode
+    TransactionManager["🔄 Transaction Coordinator<br/>(Unit of Work & Invariants)"]:::serviceNode
+  end
+
+  subgraph PersistenceTier ["🗄️ Tier 4: Data Infrastructure & Persistence"]
+    DataRepository["📦 Repository Access Layer<br/>(Data Mapper & ORM)"]:::dbNode
+    PrimaryDB[("🗄️ ACID Persistent Store<br/>(Relational / Document DB)")]:::dbNode
+    CacheStore[("⚡ In-Memory Cache Store<br/>(Redis / Session Memory)")]:::dbNode
+  end
+
+  ClientApp --> StateStore
+  StateStore --> APIGateway
+  APIGateway --> AuthGuard
+  AuthGuard --> ValidationEngine
+  ValidationEngine --> CoreService
+  CoreService --> TransactionManager
+  TransactionManager --> DataRepository
+  DataRepository --> PrimaryDB
+  DataRepository -.-> CacheStore
+  TransactionManager -. "Status Return" .-> StateStore`;
+}
+window.generateLayeredArchitecture = generateLayeredArchitecture;
+
+function generateSecurityBoundaryDiagram(scanData, sourceCode) {
+  return `flowchart LR
+  classDef startNode fill:#fed7aa,stroke:#f97316,stroke-width:2px,color:#7c2d12,font-weight:bold,rx:8px,ry:8px;
+  classDef decisionNode fill:#fbcfe8,stroke:#db2777,stroke-width:2px,color:#831843,font-weight:bold;
+  classDef serviceNode fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#134e4a,font-weight:bold,rx:8px,ry:8px;
+  classDef dbNode fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,font-weight:bold,rx:8px,ry:8px;
+  classDef altNode fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#991b1b,font-weight:bold,rx:8px,ry:8px;
+  classDef endNode fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d,font-weight:bold,rx:10px,ry:10px;
+
+  subgraph PublicZone ["🌐 Public Network Perimeter"]
+    ExternalClient["💻 External Client Request<br/>(Untrusted Ingress)"]:::startNode
+  end
+
+  subgraph PerimeterZone ["🛡️ Traffic Shaping & TLS Perimeter"]
+    RateLimiter{"🛑 Rate Limiter & Throttler<br/>(Token Bucket / Leaky Bucket)"}:::decisionNode
+    TLSTermination["🔒 TLS 1.3 Termination<br/>(Strict Transport Security)"]:::serviceNode
+  end
+
+  subgraph IdentityZone ["🔑 Zero-Trust Auth & Sanitization"]
+    JWTValidator{"🛡️ JWT Cryptographic Verify<br/>(Signature & Expire Check)"}:::decisionNode
+    PayloadSanitizer{"⚡ Payload Schema Assertion<br/>(Anti-SQLi & XSS Filter)"}:::decisionNode
+  end
+
+  subgraph ExecutionZone ["⚙️ Sandboxed Execution & Transaction"]
+    IsolatedService["⚙️ Sandboxed Domain Logic<br/>(Least-Privilege Context)"]:::serviceNode
+    AtomicTx{"🔄 ACID Transaction Boundary<br/>(Commit / Rollback Hook)"}:::decisionNode
+  end
+
+  subgraph SinkZone ["⚠️ Fault Quarantine & Secure Storage"]
+    SecurityTrap["⚠️ 401/403 Security Quarantine<br/>(Audit Logged)"]:::altNode
+    ValidationTrap["⚠️ 422 Bad Request Envelope<br/>(RFC 7807 Detail)"]:::altNode
+    RollbackSink["⏮️ Compensating Rollback<br/>(Atomic State Revert)"]:::altNode
+    EncryptedDB[("🔐 Encrypted Database<br/>(AES-256 Storage at Rest)")]:::dbNode
+    SuccessEnvelope["✅ Authenticated Response<br/>(Signed HTTP 200)"]:::endNode
+  end
+
+  ExternalClient --> RateLimiter
+  RateLimiter -- "Rate Exceeded" --> SecurityTrap
+  RateLimiter -- "Within Quota" --> TLSTermination
+  TLSTermination --> JWTValidator
+  JWTValidator -- "Tampered / Expired" --> SecurityTrap
+  JWTValidator -- "Valid Principal" --> PayloadSanitizer
+  PayloadSanitizer -- "Malformed Data" --> ValidationTrap
+  PayloadSanitizer -- "Sanitized Body" --> IsolatedService
+  IsolatedService --> AtomicTx
+  AtomicTx -- "Exception Thrown" --> RollbackSink
+  AtomicTx -- "All Invariants Met" --> EncryptedDB
+  EncryptedDB --> SuccessEnvelope
+  RollbackSink -. "Audit Incident" .-> SecurityTrap`;
+}
+window.generateSecurityBoundaryDiagram = generateSecurityBoundaryDiagram;
+
+function switchArchDiagramView(viewMode) {
+  currentArchDiagramView = viewMode || "pipeline";
+  const scanData = VivaState.projectScan || {};
+  const sourceCode = VivaState.sourceCode || "";
+
+  // Update tabs styling
+  const tabPipeline = document.getElementById("tab-arch-pipeline");
+  const tabLayered = document.getElementById("tab-arch-layered");
+  const tabSecurity = document.getElementById("tab-arch-security");
+  const badgeEl = document.getElementById("arch-view-badge");
+  const patternBadge = document.getElementById("arch-pattern-badge");
+  const summaryText = document.getElementById("arch-summary-text");
+  const legendTip = document.getElementById("arch-diagram-legend-tip");
+  const modeTag = document.getElementById("arch-diagram-mode-tag");
+
+  const activeClasses = ["bg-white", "text-blue-700", "shadow-2xs", "border", "border-blue-200/60", "font-bold"];
+  const inactiveClasses = ["text-slate-600", "hover:text-slate-900", "hover:bg-white/60", "font-semibold"];
+
+  [tabPipeline, tabLayered, tabSecurity].forEach(tab => {
+    if (tab) {
+      activeClasses.forEach(c => tab.classList.remove(c));
+      inactiveClasses.forEach(c => tab.classList.add(c));
+    }
+  });
+
+  let selectedCode = "";
+
+  if (viewMode === "pipeline") {
+    if (tabPipeline) {
+      inactiveClasses.forEach(c => tabPipeline.classList.remove(c));
+      activeClasses.forEach(c => tabPipeline.classList.add(c));
+    }
+    if (badgeEl) badgeEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span> Pipeline View Active`;
+    if (patternBadge) patternBadge.textContent = scanData.architecture_pattern || "End-to-End Data Pipeline";
+    if (summaryText) summaryText.textContent = scanData.system_summary || "Sequential execution path from ingress to database persistence.";
+    if (legendTip) legendTip.innerHTML = `<strong>Data Flow Pipeline:</strong> Traces the sequential lifecycle of requests across system tiers. Directional arrows (<code class="font-mono text-blue-600 font-bold">&rarr;</code>) trace actual data payloads. Click any node to inspect code and Big-O complexity.`;
+    if (modeTag) modeTag.textContent = "Data Flow Pipeline View";
+
+    selectedCode = scanData.mermaid_diagram || "";
+  } else if (viewMode === "layered") {
+    if (tabLayered) {
+      inactiveClasses.forEach(c => tabLayered.classList.remove(c));
+      activeClasses.forEach(c => tabLayered.classList.add(c));
+    }
+    if (badgeEl) badgeEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> Layered View Active`;
+    if (patternBadge) patternBadge.textContent = "N-Tier Modular Subsystem Architecture";
+    if (summaryText) summaryText.textContent = "Decouples presentation, gateway routing, domain logic, and persistence infrastructure into strict abstraction boundaries.";
+    if (legendTip) legendTip.innerHTML = `<strong>Layered & Subsystems:</strong> Subgraphs isolate Presentation, Ingress Gateway, Domain Core, and Persistence Tiers with decoupled dependency boundaries. Click any node to inspect code and Big-O complexity.`;
+    if (modeTag) modeTag.textContent = "Modular Layered Subsystems View";
+
+    selectedCode = generateLayeredArchitecture(scanData, sourceCode);
+  } else if (viewMode === "security") {
+    if (tabSecurity) {
+      inactiveClasses.forEach(c => tabSecurity.classList.remove(c));
+      activeClasses.forEach(c => tabSecurity.classList.add(c));
+    }
+    if (badgeEl) badgeEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> Security View Active`;
+    if (patternBadge) patternBadge.textContent = "Zero-Trust Security & Fault Boundary";
+    if (summaryText) summaryText.textContent = "Hardened defense-in-depth perimeter featuring rate limiting, cryptographic JWT gates, schema assertions, and ACID rollback sinks.";
+    if (legendTip) legendTip.innerHTML = `<strong>Security & Fault Boundaries:</strong> Zero-Trust defense perimeter mapping untrusted ingress, rate limiters, token verification, schema assertions, and compensating rollback sinks. Click any node to inspect code and Big-O complexity.`;
+    if (modeTag) modeTag.textContent = "Security & Fault Boundaries View";
+
+    selectedCode = generateSecurityBoundaryDiagram(scanData, sourceCode);
+  }
+
+  // Render diagram into container
+  renderMermaidDiagram(selectedCode, "arch-mermaid-container");
+}
+window.switchArchDiagramView = switchArchDiagramView;
+
 function renderArchitectureOutput(scanData) {
   // Reset per-diagram node inspection code cache so fresh diagrams generate fresh unique snippets
   nodeArchProfilesCache = {};
@@ -3320,10 +3579,8 @@ function renderArchitectureOutput(scanData) {
   }
   if (summaryText) summaryText.textContent = scanData.system_summary || "End-to-end project architecture data flow";
 
-  // Render Mermaid Diagram
-  if (scanData.mermaid_diagram) {
-    renderMermaidDiagram(scanData.mermaid_diagram, "arch-mermaid-container");
-  }
+  // Render Mermaid Diagram via active perspective switcher
+  switchArchDiagramView(currentArchDiagramView || "pipeline");
 
   // Render Step-by-Step Flow
   const flowContainer = document.getElementById("arch-flow-steps");
@@ -3871,13 +4128,19 @@ function stopVivaDefenseAudio() {
 window.stopVivaDefenseAudio = stopVivaDefenseAudio;
 
 function copyMermaidCode() {
-  const code = VivaState.projectScan?.mermaid_diagram;
+  const scanData = VivaState.projectScan || {};
+  let code = scanData.mermaid_diagram || "";
+  if (currentArchDiagramView === "layered") {
+    code = generateLayeredArchitecture(scanData, VivaState.sourceCode || "");
+  } else if (currentArchDiagramView === "security") {
+    code = generateSecurityBoundaryDiagram(scanData, VivaState.sourceCode || "");
+  }
   if (!code) {
     alert("Please scan a project first.");
     return;
   }
   navigator.clipboard.writeText(code).then(() => {
-    alert("Mermaid Flowchart Code copied to clipboard! You can paste it in GitHub Markdown or Mermaid Live.");
+    alert(`Mermaid ${currentArchDiagramView.toUpperCase()} diagram code copied to clipboard! You can paste it in GitHub Markdown or Mermaid Live.`);
   });
 }
 window.copyMermaidCode = copyMermaidCode;
@@ -3886,7 +4149,7 @@ function exportDiagramSVG() {
   const container = document.getElementById("arch-mermaid-container");
   const svg = container?.querySelector("svg");
   if (!svg) {
-    alert("Flowchart not yet rendered.");
+    alert("Diagram not yet rendered.");
     return;
   }
 
@@ -3895,7 +4158,7 @@ function exportDiagramSVG() {
   const url = URL.createObjectURL(blob);
   const downloadLink = document.createElement("a");
   downloadLink.href = url;
-  downloadLink.download = `${(VivaState.projectTitle || "project").toLowerCase().replace(/\s+/g, '-')}-architecture.svg`;
+  downloadLink.download = `${(VivaState.projectTitle || "project").toLowerCase().replace(/\s+/g, '-')}-${currentArchDiagramView}-architecture.svg`;
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
@@ -4261,6 +4524,177 @@ function extractDistinctNodeProfile(nodeId, labelText, scanData, sourceCode) {
       matchedFile = "views/dashboard.js";
       codeLang = "javascript";
       codeSnippet = `// Realtime WebSocket channel streams aggregated event live to DOM\nsupabase.channel("live_metrics").on(\n  "postgres_changes",\n  { event: "INSERT", schema: "public", table: "analytics_events" },\n  (payload) => updateDOMMetrics(payload.new)\n).subscribe();`;
+    }
+  }
+
+  // 3.5 DEDICATED ARCHITECTURAL SUB-PERSPECTIVES (Layered & Security Diagrams)
+  const nodeKey = nodeId.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!codeSnippet) {
+    if (nodeKey.includes("ratelimit")) {
+      tier = "Security & Perimeter Defense";
+      tierBadgeClass = "bg-rose-100 text-rose-800";
+      icon = "🛑";
+      timeComplexity = "O(1) Redis atomic INCR with sliding window TTL";
+      spaceComplexity = "O(U) memory footprint per active client IP";
+      matchedFile = "middleware/rate_limiter.py: line 42";
+      codeLang = "python";
+      codeSnippet = `# Token-bucket sliding window rate limiter\nclient_ip = request.client.host\nrequest_count = await redis.incr(f"ratelimit:{client_ip}")\nif request_count == 1:\n    await redis.expire(f"ratelimit:{client_ip}", 60)\nif request_count > 100:\n    raise HTTPException(status_code=429, detail="Rate limit exceeded: 100 req/min limit")`;
+      failureMode = "Distributed clock skew or Redis memory exhaustion allowing throttling bypass under flood.";
+      defenseTip = "Defend that Redis memory is bounded by setting an explicit sliding window TTL (60s) with maxmemory-eviction policies, and token-bucket algorithms prevent burst starvation.";
+    } else if (nodeKey.includes("tlstermination") || nodeKey.includes("tls")) {
+      tier = "Network & Perimeter Defense";
+      tierBadgeClass = "bg-cyan-100 text-cyan-800";
+      icon = "🔒";
+      timeComplexity = "O(1) symmetric AES-256-GCM hardware cipher";
+      spaceComplexity = "O(1) session ticket state";
+      matchedFile = "nginx.conf / ingress.yaml";
+      codeLang = "plaintext";
+      codeSnippet = `# TLS 1.3 Termination & HSTS Ingress Header Policy\nssl_protocols TLSv1.3;\nssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384';\nssl_prefer_server_ciphers on;\nadd_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;\nadd_header X-Content-Type-Options "nosniff" always;`;
+      failureMode = "TLS renegotiation vulnerabilities or expired SSL certificate breaking downstream ingress.";
+      defenseTip = "Explain that TLS 1.3 eliminates vulnerable legacy ciphers and achieves a 1-RTT handshake, while ingress termination offloads symmetric decryption load from internal services.";
+    } else if (nodeKey.includes("jwtvalidator") || nodeKey.includes("authguard")) {
+      tier = "Zero-Trust Identity & Access";
+      tierBadgeClass = "bg-pink-100 text-pink-800";
+      icon = "🛡️";
+      timeComplexity = "O(1) HMAC-SHA256 signature verification";
+      spaceComplexity = "O(1) decoded claims token object";
+      matchedFile = "security/jwt_guard.py: line 58";
+      codeLang = "python";
+      codeSnippet = `# Zero-trust JWT cryptographic verification and claims assertion\ntry:\n    payload = jwt.decode(\n        token, \n        JWT_SECRET_KEY, \n        algorithms=["HS256"], \n        options={"require": ["exp", "sub", "role"]}\n    )\n    request.state.user = payload\nexcept jwt.ExpiredSignatureError:\n    raise HTTPException(status_code=401, detail="Token signature expired")\nexcept jwt.InvalidTokenError:\n    raise HTTPException(status_code=401, detail="Invalid cryptographic signature")`;
+      failureMode = "Algorithm substitution attack ('alg: none') or weak symmetric secrets susceptible to offline brute-forcing.";
+      defenseTip = "Emphasize that the decode call explicitly enforces algorithms=['HS256'] to prevent algorithm substitution attacks, and verify expiration timestamps in constant time.";
+    } else if (nodeKey.includes("payloadsanitizer") || nodeKey.includes("validationengine")) {
+      tier = "Validation & Sanitization Boundary";
+      tierBadgeClass = "bg-amber-100 text-amber-800";
+      icon = "⚡";
+      timeComplexity = "O(K) recursive field schema traversal";
+      spaceComplexity = "O(K) validated model instance";
+      matchedFile = "schemas/sanitizer.py: line 74";
+      codeLang = "python";
+      codeSnippet = `# Anti-SQLi, XSS parameter sanitization & strict Pydantic parsing\nclass IngressPayloadValidator(BaseModel):\n    account_id: str\n    amount: float = Field(..., gt=0)\n    memo: str = Field(..., max_length=250)\n\n    @validator("memo")\n    def sanitize_memo(cls, v):\n        clean = html.escape(v)\n        if re.search(r"(--|;|/\\*|\\*/)", clean):\n            raise ValueError("Malformed character sequence detected")\n        return clean`;
+      failureMode = "Second-order SQL injection where stored sanitized strings are unescaped downstream.";
+      defenseTip = "Explain that Pydantic enforces strict type coercion before execution, coupled with parameterized SQL queries so raw strings are never concatenated into database drivers.";
+    } else if (nodeKey.includes("isolatedservice") || (nodeKey.includes("coreservice") && !src.includes("INVENTORY"))) {
+      tier = "Domain Core & Sandboxed Logic";
+      tierBadgeClass = "bg-indigo-100 text-indigo-800";
+      icon = "⚙️";
+      timeComplexity = "O(N) domain business algorithmic execution";
+      spaceComplexity = "O(1) isolated stack frame";
+      matchedFile = "services/domain_core.py: line 112";
+      codeLang = "python";
+      codeSnippet = `# Sandboxed domain execution under least-privilege boundary\nasync def execute_secure_domain_transition(user: dict, payload: IngressPayloadValidator):\n    if user.get("role") not in ["admin", "verified_user"]:\n        raise PermissionError("Action forbidden: Insufficient security clearances")\n    \n    computed_result = await domain_engine.calculate_transition(payload)\n    return {"status": "success", "result": computed_result}`;
+      failureMode = "Thread pool starvation or unhandled runtime exceptions corrupting in-memory state.";
+      defenseTip = "Explain how service isolation ensures failures in business logic bubble up cleanly into typed exceptions without tearing down the worker process.";
+    } else if (nodeKey.includes("atomictx") || nodeKey.includes("transactionmanager") || nodeKey.includes("transactioncoordinator")) {
+      tier = "Transactional Integrity & Boundary";
+      tierBadgeClass = "bg-teal-100 text-teal-800";
+      icon = "🔄";
+      timeComplexity = "O(1) connection commit / rollback primitive";
+      spaceComplexity = "O(W) write-ahead log buffer";
+      matchedFile = "database/transaction.py: line 95";
+      codeLang = "python";
+      codeSnippet = `# ACID Transaction Boundary Coordinator with automated rollback hook\nasync with db_engine.begin() as conn:\n    try:\n        await conn.execute(update_balance_stmt)\n        await conn.execute(insert_audit_trail_stmt)\n        # conn automatically issues COMMIT on clean exit\n    except Exception as err:\n        logger.error(f"Transaction aborted: {err}. Executing atomic rollback.")\n        raise`;
+      failureMode = "Distributed transaction race conditions or database lock deadlocks leading to 500 crashes.";
+      defenseTip = "Defend using ACID isolation levels (READ COMMITTED) and explain that the begin() context manager guarantees zero partial writes by issuing an immediate rollback on any error.";
+    } else if (nodeKey.includes("securitytrap") || (nodeKey.includes("security") && role === "error_rejection")) {
+      tier = "Fault-Tolerance & Security Quarantine";
+      tierBadgeClass = "bg-red-100 text-red-800";
+      icon = "⚠️";
+      timeComplexity = "O(1) synchronous rejection and syslog write";
+      spaceComplexity = "O(1) immutable audit log envelope";
+      matchedFile = "security/quarantine.py: line 130";
+      codeLang = "python";
+      codeSnippet = `# Security Quarantine: 401/403 rejection with immutable audit logging\nasync def quarantine_security_violation(request: Request, violation_type: str):\n    audit_event = {\n        "event": "SECURITY_VIOLATION",\n        "type": violation_type,\n        "ip": request.client.host,\n        "timestamp": time.time()\n    }\n    syslog.critical(json.dumps(audit_event))\n    return JSONResponse(status_code=403, content={"error": "ACCESS_DENIED"})`;
+      failureMode = "Audit log flooding creating denial-of-service on logging disk I/O.";
+      defenseTip = "Explain that security audit records are sent over async non-blocking syslog UDP/queues so logging never blocks the event loop or crashes application servers.";
+    } else if (nodeKey.includes("validationtrap")) {
+      tier = "Validation & Error Boundary";
+      tierBadgeClass = "bg-red-100 text-red-800";
+      icon = "⚠️";
+      timeComplexity = "O(1) error formatting";
+      spaceComplexity = "O(1) RFC 7807 problem detail envelope";
+      matchedFile = "middleware/rfc7807.py: line 65";
+      codeLang = "python";
+      codeSnippet = `# RFC 7807 Standardized Problem Details for HTTP APIs\nreturn JSONResponse(\n    status_code=422,\n    content={\n        "type": "https://api.system.io/errors/validation-failed",\n        "title": "Unprocessable Entity",\n        "status": 422,\n        "detail": "Request body contained invalid field formats",\n        "invalid_params": [{"name": "amount", "reason": "Must be greater than 0"}]\n    }\n)`;
+      failureMode = "Leaking internal stack traces, DB schema names, or secrets in API error messages.";
+      defenseTip = "Emphasize that RFC 7807 problem details sanitize internal exception messages so attackers cannot fingerprint the backend architecture.";
+    } else if (nodeKey.includes("rollbacksink")) {
+      tier = "Fault Tolerance & Disaster Recovery";
+      tierBadgeClass = "bg-orange-100 text-orange-800";
+      icon = "⏮️";
+      timeComplexity = "O(1) dead-letter enqueue / compensation trigger";
+      spaceComplexity = "O(M) serializable transaction payload";
+      matchedFile = "services/rollback_sink.py: line 88";
+      codeLang = "python";
+      codeSnippet = `# Compensating Transaction & Dead-Letter Queue (DLQ) Handler\nasync def handle_failed_transaction_rollback(tx_id: str, failed_payload: dict, exc: Exception):\n    logger.warn(f"Routing aborted transaction {tx_id} to Dead-Letter Queue")\n    await dlq_broker.publish(\n        topic="transaction.failures",\n        message={"tx_id": tx_id, "payload": failed_payload, "error": str(exc)}\n    )\n    await external_partner_gateway.cancel_reservation(tx_id)`;
+      failureMode = "Poison-pill messages cycling forever in queues if retries are unbounded.";
+      defenseTip = "Explain that dead-letter queues capture failed transactions after 3 exponential backoff attempts, preventing infinite retry storms while preserving audit trails for debugging.";
+    } else if (nodeKey.includes("encrypteddb")) {
+      tier = "Data Infrastructure & Persistence";
+      tierBadgeClass = "bg-purple-100 text-purple-800";
+      icon = "🔐";
+      timeComplexity = "O(log M) B-Tree seek with hardware AES-NI decrypt";
+      spaceComplexity = "O(R) encrypted database page size";
+      matchedFile = "database/encrypted_tables.sql: line 15";
+      codeLang = "sql";
+      codeSnippet = `-- PostgreSQL Transparent Data Encryption & Encrypted Column Store\nCREATE EXTENSION IF NOT EXISTS pgcrypto;\n\nCREATE TABLE secure_user_ledger (\n    ledger_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    account_id UUID NOT NULL,\n    encrypted_balance BYTEA NOT NULL,\n    created_at TIMESTAMPTZ DEFAULT NOW()\n);\nALTER TABLE secure_user_ledger ENABLE ROW LEVEL SECURITY;`;
+      failureMode = "Key management failure or storing cryptographic keys on the same filesystem as the database.";
+      defenseTip = "Explain that database encryption at rest uses envelope encryption with external KMS / HSM, ensuring raw data remains unreadable even if physical disk dumps are compromised.";
+    } else if (nodeKey.includes("successenvelope")) {
+      tier = "Resolution & Client Delivery";
+      tierBadgeClass = "bg-emerald-100 text-emerald-800";
+      icon = "✅";
+      timeComplexity = "O(1) serialization and HMAC header signing";
+      spaceComplexity = "O(K) JSON output buffer";
+      matchedFile = "serializers/envelope.py: line 44";
+      codeLang = "python";
+      codeSnippet = `# Cryptographically signed response envelope with idempotency headers\nresponse_payload = {\n    "status": "success",\n    "timestamp": time.time(),\n    "signature": hmac.new(API_SECRET, raw_body.encode(), hashlib.sha256).hexdigest(),\n    "data": processed_result\n}\nresponse.headers["X-Content-Type-Options"] = "nosniff"\nreturn response_payload`;
+      failureMode = "Serialization bottlenecks when converting large domain graphs into JSON strings.";
+      defenseTip = "Explain that using high-performance C-optimized serializers (ormsgpack/ujson) minimizes CPU latency and prevents event-loop blocking on high throughput spikes.";
+    } else if (nodeKey.includes("externalclient")) {
+      tier = "Presentation & External Traffic";
+      tierBadgeClass = "bg-orange-100 text-orange-800";
+      icon = "💻";
+      timeComplexity = "O(1) HTTP client dispatch";
+      spaceComplexity = "O(1) request payload memory";
+      matchedFile = "frontend/client.js: line 25";
+      codeLang = "javascript";
+      codeSnippet = `// External Client Ingress: Dispatches authenticated bearer token request\nasync function callSecureAPI(endpoint, data) {\n  const token = localStorage.getItem("jwt_auth_token");\n  const response = await fetch(\`/api/v1/\${endpoint}\`, {\n    method: "POST",\n    headers: {\n      "Authorization": \`Bearer \${token}\`,\n      "Content-Type": "application/json"\n    },\n    body: JSON.stringify(data)\n  });\n  if (!response.ok) throw new Error(\`HTTP Error: \${response.status}\`);\n  return await response.json();\n}`;
+      failureMode = "Storing sensitive JWTs in unencrypted localStorage vulnerable to Cross-Site Scripting (XSS).";
+      defenseTip = "Point out that in production, authentication tokens should be stored in HttpOnly; SameSite=Strict; Secure cookies rather than localStorage to mitigate XSS token theft.";
+    } else if (nodeKey.includes("statestore")) {
+      tier = "Client State & Action Dispatcher";
+      tierBadgeClass = "bg-orange-100 text-orange-800";
+      icon = "⚡";
+      timeComplexity = "O(1) in-memory state transition";
+      spaceComplexity = "O(S) client store state tree";
+      matchedFile = "frontend/store.js: line 32";
+      codeLang = "javascript";
+      codeSnippet = `// Centralized Client State Store: Dispatches actions and synchronizes UI\nconst stateStore = {\n  state: { items: [], status: "idle", activeId: null },\n  dispatch(action, payload) {\n    if (action === "SET_STATUS") this.state.status = payload;\n    if (action === "LOAD_DATA") this.state.items = payload;\n    notifySubscribers(this.state);\n  }\n};`;
+      failureMode = "State race condition when concurrent asynchronous API responses overwrite local store out-of-order.";
+      defenseTip = "Defend with sequence version tags or AbortController to discard stale API responses before mutating the client store.";
+    } else if (nodeKey.includes("datarepository")) {
+      tier = "Data Access & Repository Layer";
+      tierBadgeClass = "bg-purple-100 text-purple-800";
+      icon = "📦";
+      timeComplexity = "O(log M) B-Tree indexed database query";
+      spaceComplexity = "O(R) hydrated entity objects";
+      matchedFile = "repositories/base_repository.py: line 36";
+      codeLang = "python";
+      codeSnippet = `# Repository Pattern: Decouples business domain from raw SQL queries\nclass EntityRepository:\n    def __init__(self, db_session):\n        self.db = db_session\n\n    async def get_by_id(self, entity_id: str):\n        stmt = select(EntityModel).where(EntityModel.id == entity_id)\n        result = await self.db.execute(stmt)\n        return result.scalar_one_or_none()`;
+      failureMode = "N+1 query problem when lazily loading related relational entities inside a loop.";
+      defenseTip = "Defend with eager loading (joinedload/selectinload) and explain how repository abstractions make switching database drivers seamless without rewriting domain business logic.";
+    } else if (nodeKey.includes("cachestore")) {
+      tier = "In-Memory Cache & Session Store";
+      tierBadgeClass = "bg-purple-100 text-purple-800";
+      icon = "⚡";
+      timeComplexity = "O(1) hash map memory lookup";
+      spaceComplexity = "O(C) RAM allocation under LRU eviction";
+      matchedFile = "infrastructure/cache.py: line 24";
+      codeLang = "python";
+      codeSnippet = `# Cache-Aside Strategy with Redis & TTL Expiration\nasync def get_cached_or_compute(key: str, compute_func, ttl_seconds: int = 300):\n    cached = await redis_client.get(key)\n    if cached:\n        return json.loads(cached)\n    fresh_value = await compute_func()\n    await redis_client.setex(key, ttl_seconds, json.dumps(fresh_value))\n    return fresh_value`;
+      failureMode = "Cache stampede (thundering herd) when a popular key expires simultaneously for thousands of concurrent requests.";
+      defenseTip = "Defend with mutex locking (single-flight) or probabilistic early expiration (XFetch algorithm) to recompute cache before it expires.";
     }
   }
 
