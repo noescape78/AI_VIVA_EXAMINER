@@ -50,15 +50,28 @@ In university project vivas and technical defenses, students often run into the 
 
 | View | Route | What It Does | Key Highlights |
 | :--- | :--- | :--- | :--- |
-| **System Flow Canvas** | `/architecture` | Visual architecture blueprint & data flow tracer | FigJam pastel diagram, step-by-step token tracer, click-to-inspect code drawer |
-| **Oral Viva Chamber** | `/viva` | Realistic mock viva with voice questions | Microsoft Edge-TTS voice audio, speech-to-text mic input, reactive avatar, tab-switch proctoring |
+| **Project Setup & Scanner** | `/` | Ingests code from GitHub, ZIP, or folder | Public GitHub scanner, drag-and-drop folder parser, smart junk filter, 1-click presets |
+| **System Flow Canvas** | `/architecture` | Visual architecture blueprint & data flow tracer | 3 diagram perspectives (Pipeline, Layered, Security), live token flow simulator, node code drawer |
+| **Oral & MCQ Viva Chamber** | `/viva` | Realistic mock viva with voice questions & quiz | Devil's Advocate cross-examination, Rapid MCQ quiz, Edge-TTS audio, anti-cheat tab monitor |
 | **Viva Scorecard** | `/report` | Post-viva performance review and marksheet | Authorship confidence score (bluff detector), topic gap radar, 60s flashcards |
-| **AI Viva Mentor** | `/mentor` | Personalized doubt-solving lounge | Plain-English code explanations and follow-up question practice |
-| **Project Setup** | `/` | Codebase upload & scanner | 1-Click ready-made demos (FastAPI, ML, Web Auth), ZIP/Folder upload with junk filter |
+| **AI Viva Mentor** | `/mentor` | Personalized doubt-solving lounge | Plain-English code explanations, Big-O coaching, 1-min pitch generator |
 
 ---
 
-### 1. 🌐 Interactive System Flow & Multi-Perspective Architecture (`/architecture`)
+### 1. 💻 Universal Codebase Scanner & Ingestion Engine (`/`)
+
+Feed your project to VivaAI in whatever format you have it:
+
+- 🐙 **Public GitHub Repository Scanner**: Simply paste any public repo URL (`https://github.com/username/project`). VivaAI recursively traverses the repository tree, extracts essential architectural modules, and prepares a tailored viva session in seconds.
+- 📁 **Full Project Folder & ZIP Ingestion**: Drag and drop an entire local project directory (`webkitdirectory`) or ZIP archive. Built-in client-side smart filters automatically ignore bulky junk folders like `node_modules`, `venv`, `.git`, `__pycache__`, build artifacts, and lock files.
+- ⚡ **1-Click Starter Presets**: Test VivaAI instantly with ready-made demo architectures:
+  - **Python / API**: FastAPI e-commerce backend with transactional inventory and schema validations.
+  - **ML / Data**: Scikit-Learn RandomForest classifier with pipeline vectorizers and train-test splits.
+  - **Web / Auth**: Supabase BaaS edge runtime with PostgreSQL Row-Level Security (RLS).
+
+---
+
+### 2. 🌐 Interactive System Flow & Multi-Perspective Architecture (`/architecture`)
 
 - 📐 **3 Architectural Perspectives (Perspective Switcher)**:
   - 🌊 **Data Flow Pipeline**: Sequential end-to-end request lifecycle from client ingress to database persistence and client response envelopes.
@@ -82,30 +95,32 @@ In university project vivas and technical defenses, students often run into the 
 
 ---
 
-### 2. 🎙️ Live Oral Viva Chamber (`/viva`)
+### 3. 🎙️ Live Oral & MCQ Viva Chamber (`/viva`)
 
-Practice answering technical questions out loud with three realistic examiner styles:
+Experience realistic viva conditions tailored to your preparation style:
 
-| Examiner Persona | Role | Focus Areas | Question Style |
-| :--- | :--- | :--- | :--- |
-| **Dr. Sharma** | Strict External Examiner | Algorithms, Big-O complexity, edge cases, memory limits | Deep, probing, technical grilling |
-| **Vikram Rao** | Industry Tech Lead | Scalability, concurrency, race conditions, error handling | Practical, architecture-oriented |
-| **Prof. Ananya** | Friendly Guide | Core fundamentals, code structure, step-by-step logic | Encouraging, patient, conceptual |
-
-- **Voice-to-Voice Interaction**: The examiner speaks questions aloud using Edge-TTS, and you can answer using your microphone (Web Speech API) or by typing.
-- **Anti-Cheat Tab Monitor**: Tracks and logs if a student switches tabs during the viva session to search on Google or ChatGPT.
+- 🥊 **Round 2: Devil's Advocate Mode (Grilling Mode)**:
+  - The AI examiner doesn't just ask static questions — it dynamically challenges your architectural decisions, questions your library choices, and counter-attacks with real-world failure scenarios to verify if you truly built the project.
+- ⚡ **Rapid-Fire MCQ Format**:
+  - Want a high-speed knowledge check? Switch from Oral Voice to **Rapid MCQ Mode** for timed, auto-generated 4-choice questions assessing syntax, edge cases, output prediction, and algorithmic bottlenecks.
+- 🗣️ **Realistic Examiner Personas**:
+  - **Dr. Sharma (Strict External Examiner)**: Deep technical grilling on Big-O complexity, edge cases, and memory limits.
+  - **Vikram Rao (Industry Tech Lead)**: Practical probing on real-world scalability, concurrency, error handling, and design choices.
+  - **Prof. Ananya (Friendly Mentor)**: Encouraging, conceptual walkthrough of core logic and fundamentals.
+- 🎙️ **Voice-to-Voice Interaction**: The examiner speaks questions aloud using Edge-TTS, and you can answer using your microphone (Web Speech API) or by typing.
+- 🛡️ **Anti-Cheat Tab Monitor**: Tracks and logs if a student switches tabs during the viva session to search on Google or ChatGPT.
 
 ---
 
-### 3. 📊 Viva Scorecard & Authorship Radar (`/report`)
+### 4. 📊 Viva Scorecard & Authorship Radar (`/report`)
 
-- 🕵️‍♂️ **Code Authorship Meter**: Evaluates whether the candidate genuinely understands the code mechanics or is just guessing.
+- 🕵️‍♂️ **Code Authorship Meter**: Evaluates whether the candidate genuinely understands the code mechanics or is bluffing using copied code.
 - 🎯 **Knowledge Gap Radar**: Visual breakdown showing which areas need review (Concurrency, Architecture, Error Handling, or Algorithmic Complexity).
 - ⚡ **60-Second Flashcards**: Quick summary cards to revise critical points right before your actual viva.
 
 ---
 
-### 4. 🤖 AI Viva Tutor & Doubt Clearing Lounge (`/mentor`)
+### 5. 🤖 AI Viva Tutor & Doubt Clearing Lounge (`/mentor`)
 
 A dedicated 24/7 interactive tutor to resolve code doubts and build confidence before your actual viva:
 
