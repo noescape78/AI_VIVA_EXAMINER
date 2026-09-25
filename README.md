@@ -1,7 +1,7 @@
-# 🎓 VivaAI — College Viva & Project Defense Prep Tool
+# 🎓 VivaAI — Interactive Project Viva & Architecture Simulator
 
 <p align="center">
-  <strong>College project submit kar diya par viva me professor ke samne phat rahi hai? VivaAI aapke code ko scan karta hai, interactive system flow diagram banata hai, aur real voice me viva lekar aapko tough questions ke liye prepare karta hai.</strong>
+  <strong>An interactive defense preparation tool for engineering students. It scans your project code, visualizes the end-to-end data flow, simulates viva questions using voice, and highlights edge cases before your professor asks about them.</strong>
 </p>
 
 <p align="center">
@@ -15,17 +15,16 @@
 
 ---
 
-## 🧐 Asli Problem Kya Hai? (Why We Built This)
+## 💡 The Real Problem
 
-Engineering college me aksar yeh hota hai:
-1. **Code to chal jata hai, par viva me bura haal hota hai**: Students project bana lete hain (ya YouTube/ChatGPT se dekhkar banate hain), lekin jab external examiner poochta hai:
-   - *"Do concurrent requests ek saath aayi to tumhara database corrupt kyu nahi hoga?"*
-   - *"Is function ka worst-case Time aur Space Complexity kya hai?"*
-   - *"Agar network fail ho gaya to user ko kya dikhega?"*
-   To mostly students blank ho jaate hain.
-2. **Boring Static Architecture Diagrams**: File me ek basic PNG diagram laga dete hain jiska live code execution se koi lena-dena nahi hota.
+In university project vivas and technical defenses, students often run into the same hurdles:
+1. **The code works, but defending it is hard**: Students build projects using tutorials or AI assistants, but get stuck when external examiners ask deep questions:
+   - *"What happens if two users hit this checkout button at the exact same millisecond?"*
+   - *"Why did you pick this database/library instead of standard alternatives?"*
+   - *"What is the worst-case Time and Space complexity here, and where can this code fail?"*
+2. **Static architecture diagrams**: Traditional project reports usually contain a basic static image that does not explain how data actually moves through the system or where errors are caught.
 
-**VivaAI** is pure viva anxiety ko khatam karta hai. Ye aapke project ko scan karke ek **live visual data flow diagram** banata hai, examiner ke **hidden traps** pehle hi bata deta hai, aur **real AI voice** ke sath viva mock practice karwata hai.
+**VivaAI** solves this. It scans your source code, generates an **interactive, step-by-step visual data flow diagram**, warns you about **examiner trap questions**, and lets you practice a **voice-driven mock viva** before your actual exam.
 
 ---
 
@@ -47,106 +46,108 @@ Engineering college me aksar yeh hota hai:
 
 ---
 
-## 🚀 Saare Features Ka Detail Breakdown
+## 🚀 Key Features
 
-| Page | Route | Kya Kaam Karta Hai? | Asli Highlight |
+| View | Route | What It Does | Key Highlights |
 | :--- | :--- | :--- | :--- |
-| **System Flow Canvas** | `/architecture` | Project ka live data flow aur architecture blueprint | FigJam pastel flowchart, Step-by-step token tracer, Click-to-inspect code drawer |
-| **Oral Viva Room** | `/viva` | Real voice me professor jaisa mock viva exam | Microsoft Edge-TTS voice, Mic input (STT), Examiner animated avatar, Anti-cheat tab monitor |
-| **Viva Scorecard** | `/report` | Exam ke baad detailed analysis aur marksheet | Authorship Confidence Meter (Bluff detector), Topic-wise gap radar, 60s flashcards |
-| **AI Viva Mentor** | `/mentor` | Doubt solving aur personal practice lounge | Kisi bhi function ka simple explanation aur tricky follow-up questions |
-| **Project Setup** | `/` | Codebase ingestion (Folder, ZIP, ya GitHub) | 1-Click ready-made demo projects, Auto junk filter (`node_modules`, `venv` skip) |
+| **System Flow Canvas** | `/architecture` | Visual architecture blueprint & data flow tracer | FigJam pastel diagram, step-by-step token tracer, click-to-inspect code drawer |
+| **Oral Viva Chamber** | `/viva` | Realistic mock viva with voice questions | Microsoft Edge-TTS voice audio, speech-to-text mic input, reactive avatar, tab-switch proctoring |
+| **Viva Scorecard** | `/report` | Post-viva performance review and marksheet | Authorship confidence score (bluff detector), topic gap radar, 60s flashcards |
+| **AI Viva Mentor** | `/mentor` | Personalized doubt-solving lounge | Plain-English code explanations and follow-up question practice |
+| **Project Setup** | `/` | Codebase upload & scanner | 1-Click ready-made demos (FastAPI, ML, Web Auth), ZIP/Folder upload with junk filter |
 
 ---
 
 ### 1. 🌐 Interactive System Flow & Architecture Tracer (`/architecture`)
-Ye is project ka sabse solid feature hai jo professors aur judges ko sabse zyada pasand aata hai:
 
 - 🎮 **Step-by-Step Flow Tracer (Live Simulation)**:
-  - **Happy Path Flow**: User request kaise Client se chalkar API Gateway $\rightarrow$ Validation Guard $\rightarrow$ Domain Service $\rightarrow$ Database Commit $\rightarrow$ Response tak jaati hai, har step visually pulse hokar trace hota hai.
-  - **Error Rejection Path**: Agar malicious ya invalid input payload aaye, to validation layer use database tak pahunchne se pehle hi kaise block karta hai (HTTP 400/401).
-  - **Simulation Controls**: Play, Pause, Step Forward, Replay, aur 1x / 1.5x / 2x speed controls with live payload data ticker.
+  - **Happy Path Flow**: Watch a normal request travel from Client $\rightarrow$ API Gateway $\rightarrow$ Validation Guard $\rightarrow$ Domain Service $\rightarrow$ Database $\rightarrow$ Response. Every step lights up with glowing rings and live payload data tickers.
+  - **Error Rejection Path**: Simulates what happens when bad or unauthorized data arrives — showing how validation middleware rejects the request before it touches the database.
+  - **Playback Controls**: Step Forward, Play/Pause, Replay, and 1x / 1.5x / 2x speed controls.
 
 - 🥊 **Professor Cross-Examination & Viva Defense Counter**:
-  - Examiners viva me jo tricky traps poochte hain (jaise Database Race Conditions, Connection Pool Exhaustion, Single Point of Failure).
-  - Saath me **Senior Defense Script** milti hai — exact technical words jo viva me bolne se examiner impress ho jaye.
-  - **Audio Voice Feature**: Microsoft Edge-TTS se real professor voice me defense sun sakte ho with live animated audio waves!
+  - Uncovers the top 3 hidden traps examiners love to probe (such as race conditions, connection pool limits, and single points of failure).
+  - Provides an **Ideal Defense Script** with clear talking points to answer confidently.
+  - **Neural Voice Playback**: Listen to the defense spoken aloud using Microsoft Edge-TTS with animated sound wave visualizers.
 
 - 🔍 **Click-to-Inspect Node Code Drawer**:
-  - Flowchart ke **kisi bhi node** par click karo, right side se drawer slide hokar khulega.
-  - **Zero Code Repetition**: Har node ka apna unique code snippet dikhega (Client ka alag, Gateway ka alag, Auth ka alag, Database ka alag).
-  - Node ki accurate **Time Complexity**, **Space Complexity**, aur runtime failure point dikhata hai.
+  - Click **any node** in the diagram to slide out its dedicated inspector.
+  - **Zero Code Repetition**: Each node displays its own distinct code snippet (Client has frontend fetch, Gateway has routing, Auth has schema validation, Database has queries, etc.).
+  - Shows accurate **Big-O Time Complexity**, **Space Complexity**, and runtime failure points.
 
 ---
 
-### 2. 🎙️ Live Oral Viva Room (`/viva`)
-Aapke code ke hisaab se customized questions generate hote hain real viva style me:
+### 2. 🎙️ Live Oral Viva Chamber (`/viva`)
+
+Practice answering technical questions out loud with three realistic examiner styles:
 
 | Examiner Persona | Role | Focus Areas | Question Style |
 | :--- | :--- | :--- | :--- |
-| **Dr. Sharma** | Strict External Examiner | Big-O Complexity, Edge cases, Memory leaks | Serious, deep technical grilling |
-| **Vikram Rao** | Industry Tech Lead | Scalability, Concurrency, Database locks | Practical architecture questions |
-| **Prof. Ananya** | Friendly Internal Guide | Core fundamentals, Logic flow, Concepts | Patient, step-by-step guidance |
+| **Dr. Sharma** | Strict External Examiner | Algorithms, Big-O complexity, edge cases, memory limits | Deep, probing, technical grilling |
+| **Vikram Rao** | Industry Tech Lead | Scalability, concurrency, race conditions, error handling | Practical, architecture-oriented |
+| **Prof. Ananya** | Friendly Guide | Core fundamentals, code structure, step-by-step logic | Encouraging, patient, conceptual |
 
-- **Voice-to-Voice Interaction**: Examiner bolkar question poochta hai, aur aap microphone se bolkar (ya type karke) answer de sakte ho.
-- **Anti-Cheat Tab Monitor**: Agar viva ke dauran student doosre tab me jakar Google ya ChatGPT search karne ki koshish kare, to system use detect karke report me flag karta hai.
+- **Voice-to-Voice Interaction**: The examiner speaks questions aloud using Edge-TTS, and you can answer using your microphone (Web Speech API) or by typing.
+- **Anti-Cheat Tab Monitor**: Tracks and logs if a student switches tabs during the viva session to search on Google or ChatGPT.
 
 ---
 
 ### 3. 📊 Viva Scorecard & Authorship Radar (`/report`)
-- 🕵️‍♂️ **Code Authorship / Bluff Detector**: Calculate karta hai ki student ne code sach me khud samjhkar likha hai ya bina samjhe copy-paste kiya hai.
-- 🎯 **Knowledge Gap Radar**: Topic-wise graph dikhata hai ki aap Concurrency me weak ho, Error Handling me strong ho, ya Complexity me revision chahiye.
-- ⚡ **60-Second Flashcards**: Viva me ghusne se pehle quick revision ke bullet points.
+
+- 🕵️‍♂️ **Code Authorship Meter**: Evaluates whether the candidate genuinely understands the code mechanics or is just guessing.
+- 🎯 **Knowledge Gap Radar**: Visual breakdown showing which areas need review (Concurrency, Architecture, Error Handling, or Algorithmic Complexity).
+- ⚡ **60-Second Flashcards**: Quick summary cards to revise critical points right before your actual viva.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Component | Technology | Kyu Use Kiya? |
+| Component | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Backend** | Python 3.10+, FastAPI | High speed, modern async request handling |
-| **Server** | Uvicorn + WatchFiles | Auto-reload ke sath production ASGI server |
-| **Primary AI** | Google Gemini Flash | Sub-second latency (1 second se kam me response) |
-| **Backup AI** | OpenRouter Free Pool | Agar Gemini key fail ho to automatic fallback |
-| **Voice Synthesis** | Microsoft Edge-TTS | 100% Free, realistic human voice (no API key needed) |
-| **Flowchart Engine** | Mermaid.js v11 | Dynamic SVG flow diagrams client-side par render |
-| **ZIP Handling** | JSZip (Browser) | ZIP aur Folders se junk files (`node_modules`, `venv`) direct filter |
-| **Design** | Tailwind CSS | Clean, modern SaaS white UI theme |
+| **Backend Framework** | Python 3.10+, FastAPI | High-speed asynchronous REST API |
+| **Server Engine** | Uvicorn + WatchFiles | Production ASGI server with hot reloading |
+| **Primary AI Model** | Google Gemini Flash | Fast sub-second responses for questions and evaluations |
+| **Backup AI Model** | OpenRouter Free Pool | Automatic fallback pool (Llama 3.3, Gemini 2.0) |
+| **Voice Synthesis** | Microsoft Edge-TTS | 100% Free, natural human voice (no API key required) |
+| **Flowchart Engine** | Mermaid.js v11 | Client-side dynamic SVG flowchart rendering |
+| **Archive Unpacker** | JSZip (Browser) | Extracts ZIPs in-browser while filtering junk folders (`node_modules`, `venv`) |
+| **Frontend Styling** | Tailwind CSS | Clean, modern white SaaS layout with pastel node themes |
 
 ---
 
-## ⚡ Setup Kaise Karein? (Simple 4 Steps)
+## ⚡ Quick Start Guide (4 Steps)
 
-### Step 1: Repo Clone Karein
+### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/noescape78/AI_VIVA_EXAMINER.git
 cd AI_VIVA_EXAMINER
 ```
 
-### Step 2: Dependencies Install Karein
+### Step 2: Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 3: API Key Setup Karein
-`.env.example` file ko copy karke `.env` banayein:
+### Step 3: Configure Environment Variables
+Copy `.env.example` to `.env`:
 ```bash
 copy .env.example .env
 ```
-*(Mac / Linux user: `cp .env.example .env`)*
+*(On Linux/macOS: `cp .env.example .env`)*
 
-`.env` file open karein aur apni Google Gemini API key daalein:
+Open `.env` and add your free Google Gemini API key:
 ```env
-GEMINI_API_KEYS=your_gemini_key_here
+GEMINI_API_KEYS=your-gemini-api-key-here
 PORT=8000
 ```
-> *Note: Agar aapke paas API key nahi bhi hai ya internet chala gaya, tab bhi tension nahi — isme built-in deterministic offline blueprints hain jo bina ruke smoothly chalte hain!*
+> **Note**: Even if your API key runs out or internet is disconnected, VivaAI has built-in offline fallbacks so the viva simulation and architecture diagrams continue to work smoothly.
 
-### Step 4: Server Start Karein
+### Step 4: Start the Server
 ```bash
 python app.py
 ```
-Ab browser me open karein: **[http://localhost:8000](http://localhost:8000)**
+
+Open **[http://localhost:8000](http://localhost:8000)** in your browser!
 
 ---
 
@@ -154,24 +155,25 @@ Ab browser me open karein: **[http://localhost:8000](http://localhost:8000)**
 
 ```
 AI_VIVA_EXAMINER/
-├── index.html              # Landing page, Project upload & 1-click samples
-├── architecture.html       # System flow tracer, Viva traps & Code inspector drawer
-├── viva.html               # Live oral viva chamber with voice & avatar
-├── report.html             # Detailed scorecard, Authorship meter & Flashcards
-├── mentor.html             # AI Viva Copilot doubt resolution room
-├── app.py                  # FastAPI backend with multi-key AI auto-rotation
-├── requirements.txt        # Python libraries list
+├── index.html              # Landing page, project upload & 1-click test samples
+├── architecture.html       # Flow tracer simulation, viva traps & code inspector drawer
+├── viva.html               # Live oral viva chamber with voice & reactive avatar
+├── report.html             # Detailed scorecard, authorship meter & flashcards
+├── mentor.html             # AI Viva Copilot doubt resolution lounge
+├── app.py                  # FastAPI server with dual-key AI auto-failover
+├── requirements.txt        # Python dependency manifest
 ├── .env.example            # Environment variables template
-├── sample_projects/        # Ready-made demo projects for instant testing
+├── sample_projects/        # Built-in demo projects for instant testing
 │   ├── ecommerce_checkout.py
 │   ├── disease_prediction_ml.py
 │   └── jwt_auth_service.js
 └── static/
-    ├── css/style.css       # Clean styling, pulsing nodes & audio equalizer waves
+    ├── css/style.css       # Clean styling, glowing pulse nodes & audio equalizer waves
     └── js/app.js           # Flow simulation engine, voice STT/TTS & drawer code
 ```
 
 ---
 
 ## 📜 License
-MIT License ke under free aur open-source hai.
+
+This project is licensed under the [MIT License](LICENSE).
