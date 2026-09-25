@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Flow & Architecture Blueprint • VivaAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Mermaid.js for Interactive Flowchart Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <!-- JSZip for instant client-side ZIP extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    /* FigJam & Whimsical Dot Grid Canvas (Images 2 & 3) */
+    .arch-light-canvas {
+      background-color: #fbfcfe !important;
+      background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px) !important;
+      background-size: 22px 22px !important;
+    }
+    .arch-dark-canvas {
+      background-color: #0b0f19 !important;
+      background-image: radial-gradient(#334155 1.5px, transparent 1.5px) !important;
+      background-size: 22px 22px !important;
+    }
+    
+    .mermaid-diagram-container svg {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+      overflow: visible !important;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
+    }
+
+    /* Node Shapes & Geometry */
+    .mermaid .node rect, svg .node rect {
+      rx: 12px !important;
+      ry: 12px !important;
+      stroke-width: 2px !important;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.08));
+    }
+    .mermaid .node polygon, svg .node polygon {
+      stroke-width: 2px !important;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Node Text & Typography */
+    .mermaid .node .label, svg .node .label,
+    .mermaid .node text, svg .node text {
+      font-family: 'Inter', system-ui, sans-serif !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      line-height: 1.4 !important;
+    }
+    .mermaid .node .label i, svg .node .label i {
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      opacity: 0.88;
+      display: inline-block;
+      margin-top: 3px;
+    }
+
+    /* Orthogonal 90-degree Connectors (Images 2 & 3) */
+    .mermaid .edgePath path, svg .edgePath path {
+      stroke: #64748b !important;
+      stroke-width: 2.2px !important;
+    }
+    .mermaid .marker, svg .marker {
+      fill: #64748b !important;
+      stroke: #64748b !important;
+    }
+
+    /* Arrow Badges */
+    .mermaid .edgeLabel, svg .edgeLabel {
+      font-family: 'Inter', system-ui, sans-serif !important;
+      background-color: #ffffff !important;
+      fill: #334155 !important;
+      color: #334155 !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      padding: 3px 8px !important;
+      border-radius: 6px !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    }
+
+    /* Dark Mode Overrides */
+    .arch-dark-canvas .mermaid .edgePath path, .arch-dark-canvas svg .edgePath path {
+      stroke: #94a3b8 !important;
+    }
+    .arch-dark-canvas .mermaid .marker, .arch-dark-canvas svg .marker {
+      fill: #94a3b8 !important;
+      stroke: #94a3b8 !important;
+    }
+    .arch-dark-canvas .mermaid .edgeLabel, .arch-dark-canvas svg .edgeLabel {
+      background-color: #1e293b !important;
+      fill: #f1f5f9 !important;
+      color: #f1f5f9 !important;
+      border-color: #475569 !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 bg-grid-pattern min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR -->
+  <header class="nav-header">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 text-slate-900 font-bold text-lg hover:opacity-90">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
+            🎓
+          </div>
+          <span>Viva<span class="text-blue-600">AI</span></span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex items-center gap-1 sm:gap-2">
+        <a href="/" class="nav-link">
+          <span>Start Viva</span>
+        </a>
+        <a href="/viva" class="nav-link">
+          <span>Exam Room</span>
+        </a>
+        <a href="/architecture" class="nav-link active">
+          <span>System Flow</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 font-bold">New</span>
+        </a>
+        <a href="/report" class="nav-link">
+          <span>Result</span>
+        </a>
+        <a href="/mentor" class="nav-link">
+          <span>AI Tutor</span>
+        </a>
+      </nav>
+
+      <!-- Online Status Indicator -->
+      <div class="flex items-center gap-2 text-xs text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="font-medium">Online</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    
+    <!-- Hero Header -->
+    <div class="text-center max-w-2xl mx-auto mb-7">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-semibold mb-2.5 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+        <span>Deep Project Scanner & Flowchart Engine</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        System Flow & <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">Architecture Blueprint</span>
+      </h1>
+      <p class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        Deeply scans your project folder or GitHub repository to map end-to-end data flow, module relationships, and architectural execution paths with crystal-clear visual diagrams.
+      </p>
+    </div>
+
+    <!-- INGESTION & SCANNER CONTROLS -->
+    <div class="pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm rounded-2xl mb-7">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🗺️</span>
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Project Codebase Input</h2>
+            <p class="text-[11px] text-slate-500">Choose a project source to scan its internal architecture</p>
+          </div>
+        </div>
+
+        <!-- 3 Ingestion Tabs -->
+        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+          <button id="tab-btn-current" onclick="switchArchTab('current')" class="px-3 py-1 rounded-md bg-white text-slate-900 shadow-xs transition">Active Viva Project</button>
+          <button id="tab-btn-folder" onclick="switchArchTab('folder')" class="px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">Upload Folder/ZIP</button>
+          <button id="tab-btn-github" onclick="switchArchTab('github')" class="px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">🐙 GitHub Link</button>
+        </div>
+      </div>
+
+      <!-- TAB 1: CURRENT VIVA PROJECT -->
+      <div id="arch-content-current" class="space-y-3">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="text-[10px] font-bold uppercase text-slate-400">Current Loaded Project</div>
+            <div class="text-sm font-bold text-slate-900" id="arch-active-project-title">Loading project...</div>
+            <div class="text-xs text-slate-500 font-mono mt-0.5" id="arch-active-code-stats">0 lines of source code loaded</div>
+          </div>
+          <button type="button" onclick="triggerArchDeepScan()" id="btn-scan-current" class="btn-primary py-2 px-4 text-xs font-bold rounded-xl shadow-sm flex items-center gap-2 cursor-pointer">
+            <span>Scan & Generate Architecture</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 2: UPLOAD FOLDER / ZIP -->
+      <div id="arch-content-folder" class="hidden space-y-3">
+        <div id="arch-dropzone" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-6 text-center bg-slate-50 transition cursor-pointer">
+          <div class="text-3xl mb-1.5">📁</div>
+          <p class="text-sm font-semibold text-slate-800">Drop your Project Folder, ZIP, or Multiple Code Files</p>
+          <p class="text-xs text-slate-500 mt-0.5">Filters junk (node_modules, venv, .git) and extracts core system files automatically</p>
+          
+          <input type="file" id="arch-file-input" multiple class="hidden" accept=".py,.js,.jsx,.ts,.tsx,.cpp,.c,.java,.html,.css,.json,.txt,.zip">
+          <input type="file" id="arch-folder-input" webkitdirectory directory multiple class="hidden">
+          
+          <div class="mt-3 flex items-center justify-center gap-2">
+            <button type="button" onclick="document.getElementById('arch-folder-input').click()" class="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 shadow-xs">
+              <span>📁 Upload Project Folder</span>
+            </button>
+            <button type="button" onclick="document.getElementById('arch-file-input').click()" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 shadow-xs">
+              <span>📄 Choose Files / ZIP</span>
+            </button>
+          </div>
+        </div>
+        <div id="arch-file-list" class="space-y-1.5 max-h-36 overflow-y-auto"></div>
+        <div class="flex justify-end">
+          <button type="button" onclick="triggerArchScanFromUpload()" id="btn-scan-uploaded" class="btn-primary py-2 px-4 text-xs font-bold rounded-xl shadow-sm flex items-center gap-2 cursor-pointer hidden">
+            <span>Scan Uploaded Files</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 3: GITHUB LINK -->
+      <div id="arch-content-github" class="hidden space-y-3">
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xl">🐙</span>
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">Scan Public GitHub Repository</h4>
+              <p class="text-[11px] text-slate-500">Clones repository in memory and scans primary architecture components</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="arch-github-url" placeholder="https://github.com/username/project" class="flex-1 text-xs px-3 py-2 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500 font-mono" onkeydown="if(event.key==='Enter') triggerArchScanFromGitHub()">
+            <button type="button" id="btn-scan-github" onclick="triggerArchScanFromGitHub()" class="btn-primary text-xs py-2 px-4 font-bold rounded-xl shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+              <span>Scan GitHub Repo</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+          <div id="arch-github-status" class="mt-2 hidden"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCANNING LOADER STATE (Animated Stepper) -->
+    <div id="arch-loading-stage" class="hidden pro-card p-8 bg-white border border-slate-200 shadow-sm rounded-2xl mb-7 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xl font-bold mx-auto mb-3 animate-bounce">
+        🔄
+      </div>
+      <h3 class="text-base font-bold text-slate-900 mb-1" id="arch-loading-title">Deep Scanning Codebase Architecture...</h3>
+      <p class="text-xs text-slate-500 mb-5" id="arch-loading-desc">Deconstructing module hierarchy and mapping end-to-end data pipeline.</p>
+      
+      <div class="max-w-md mx-auto grid grid-cols-4 gap-2 text-[11px] font-medium text-slate-500">
+        <div class="p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-bold" id="step-1">1. Files Tree</div>
+        <div class="p-2 rounded-lg bg-slate-50 border border-slate-200" id="step-2">2. Imports</div>
+        <div class="p-2 rounded-lg bg-slate-50 border border-slate-200" id="step-3">3. Data Flow</div>
+        <div class="p-2 rounded-lg bg-slate-50 border border-slate-200" id="step-4">4. Flowchart</div>
+      </div>
+    </div>
+
+    <!-- MAIN ARCHITECTURE OUTPUT STAGE -->
+    <div id="arch-output-stage" class="space-y-6">
+      
+      <!-- FLOWCHART CANVAS CARD -->
+      <div class="pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm rounded-2xl">
+        <!-- Top Toolbar Header Bar -->
+        <div class="border-b border-slate-100 pb-4 mb-4">
+          <!-- Top Row: Badge, Title & Action Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+              <span class="badge-clean badge-blue text-xs font-bold whitespace-nowrap shadow-2xs" id="arch-pattern-badge">Modular Architecture</span>
+            </div>
+
+            <!-- Action Buttons & Diagram Controls -->
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Canvas Theme Switcher -->
+              <button type="button" id="btn-arch-theme" onclick="toggleArchCanvasTheme()" class="btn-secondary py-1.5 px-3 text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Toggle Light Canvas / Dark Studio (Figma Style)">
+                <span>🌙 Dark Studio</span>
+              </button>
+
+              <!-- Zoom Controls Group -->
+              <div class="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-0.5 text-xs shadow-2xs">
+                <button type="button" onclick="archZoomOut()" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded-lg text-slate-700 font-bold transition cursor-pointer" title="Zoom Out (-)">−</button>
+                <span id="arch-zoom-label" class="px-2 font-mono text-[11px] text-slate-600 font-semibold select-none">100%</span>
+                <button type="button" onclick="archZoomIn()" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded-lg text-slate-700 font-bold transition cursor-pointer" title="Zoom In (+)">+</button>
+                <button type="button" onclick="archResetZoom()" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded-lg text-slate-600 text-[11px] transition cursor-pointer" title="Reset View">⟲</button>
+              </div>
+
+              <button type="button" onclick="copyMermaidCode()" class="btn-secondary py-1.5 px-3 text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Copy Raw Mermaid Code">
+                <span>📋 Copy Code</span>
+              </button>
+              <button type="button" onclick="exportDiagramSVG()" class="btn-secondary py-1.5 px-3 text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Download High-Resolution SVG">
+                <span>📥 Download SVG</span>
+              </button>
+              <button type="button" onclick="triggerArchDeepScan(true)" class="btn-primary py-1.5 px-3 text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer" title="Regenerate Architecture">
+                <span>🔄 Deep Scan</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Sleek Architectural Overview Description -->
+          <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-2.5">
+            <span class="text-sm shrink-0">⚡</span>
+            <div class="flex-1 leading-relaxed">
+              <strong class="text-slate-800 mr-1">System Overview:</strong>
+              <span id="arch-summary-text" class="text-slate-600">System data flow and execution path</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE 1: SIMULATE LIVE DATA FLOW (INTERACTIVE EXECUTION TRACER) -->
+        <div id="arch-simulation-panel" class="mb-4 p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs">
+          <!-- Scenario Bar & Action Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <!-- Scenario Selector Pills -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 shrink-0">
+                <span class="text-sm">🎬</span> Flow Tracer:
+              </span>
+              <div id="sim-scenario-selector" class="flex flex-wrap gap-1.5 text-xs">
+                <button type="button" id="sim-btn-happy" onclick="switchSimScenario('happy_path')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-semibold text-xs shadow-2xs transition cursor-pointer">
+                  ▶️ Happy Path Request
+                </button>
+                <button type="button" id="sim-btn-error" onclick="switchSimScenario('error_path')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold text-xs transition cursor-pointer">
+                  ⚠️ Validation / Error Branch
+                </button>
+              </div>
+            </div>
+
+            <!-- Tracer Playback Controls -->
+            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-2 py-1 rounded-xl shadow-2xs">
+              <button type="button" id="sim-btn-play" onclick="toggleSimPlay()" class="btn-primary py-1 px-3 text-xs font-bold rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer" title="Play / Pause Flow Simulation">
+                <span id="sim-play-icon">▶️</span> <span id="sim-play-text">Simulate</span>
+              </button>
+              <button type="button" onclick="stepSimForward()" class="px-2 py-1 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition cursor-pointer" title="Next Step">
+                ⏭️ Next
+              </button>
+              <button type="button" onclick="resetSim()" class="px-2 py-1 text-xs font-semibold text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-50 transition cursor-pointer" title="Reset Simulation">
+                ⏹️ Reset
+              </button>
+              <!-- Speed selector -->
+              <select id="sim-speed-select" onchange="changeSimSpeed(this.value)" class="text-[11px] font-mono font-semibold bg-slate-50 border border-slate-200 rounded-md px-1.5 py-0.5 text-slate-600 focus:outline-none cursor-pointer">
+                <option value="2000">1x Speed</option>
+                <option value="1200" selected>1.5x Speed</option>
+                <option value="750">2x Speed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Live Execution Ticker & Progress Bar -->
+          <div class="bg-white rounded-xl border border-slate-200 p-3 shadow-2xs">
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <div class="flex items-center gap-2">
+                <span id="sim-step-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-100 text-blue-800 font-mono">
+                  Ready
+                </span>
+                <span id="sim-step-title" class="font-bold text-slate-900">
+                  Click 'Simulate' to watch data packet flow through the architecture nodes
+                </span>
+              </div>
+              <span id="sim-step-counter" class="text-slate-400 font-mono text-[11px]">Step 0 / 0</span>
+            </div>
+            <p id="sim-step-detail" class="text-xs text-slate-600 leading-relaxed mb-2.5">
+              The diagram will sequentially illuminate each active service, route, and database node with real-time payload states.
+            </p>
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div id="sim-progress-bar" class="bg-blue-600 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mermaid Diagram Container (Interactive Pan & Zoom Stage with Dot-Grid Canvas) -->
+        <div id="arch-diagram-wrapper" class="relative arch-light-canvas p-4 sm:p-8 rounded-2xl border border-slate-200/90 overflow-hidden min-h-[460px] max-h-[740px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none transition-colors duration-200">
+          <div id="arch-mermaid-container" class="mermaid-diagram-container w-full transition-transform duration-75 origin-center flex items-center justify-center">
+            <!-- Mermaid SVG renders here -->
+          </div>
+          <!-- Floating interactive helper badge -->
+          <div class="absolute bottom-2.5 right-3 pointer-events-none text-[10px] text-slate-500 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-xs flex items-center gap-1.5">
+            <span>🔍 Click node to inspect code & complexity</span>
+            <span class="text-slate-300">•</span>
+            <span>🖱️ Drag to pan</span>
+            <span class="text-slate-300">•</span>
+            <span>Use + / − to zoom</span>
+          </div>
+        </div>
+
+        <!-- Diagram Legend / Explanatory Tip -->
+        <div class="mt-3.5 flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 bg-slate-50 border border-slate-200/70 rounded-xl text-[11px] text-slate-600">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">💡</span>
+            <span><strong>Multi-Tier Blueprint:</strong> Components are categorized into logical tiers (Presentation, Gateway & Auth, Domain Logic, Database Persistence). Directional arrows (<code class="font-mono text-blue-600 font-bold">&rarr;</code>) trace actual data payloads.</span>
+          </div>
+          <span class="text-slate-400 font-mono text-[10px]">Mermaid.js Multi-Tier Canvas</span>
+        </div>
+      </div>
+
+      <!-- FEATURE 2: PROFESSOR CROSS-EXAMINATION & VIVA DEFENSE COUNTER -->
+      <div class="pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm rounded-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center text-lg font-bold shadow-2xs">
+              🥊
+            </div>
+            <div>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                <span>Professor Cross-Examination & Viva Defense Counter</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold uppercase tracking-wider">High-Stakes Traps</span>
+              </h3>
+              <p class="text-[11px] text-slate-500">
+                Top 3 architectural traps examiners will grill you on based on this diagram — with senior defense scripts & audio voice training.
+              </p>
+            </div>
+          </div>
+
+          <!-- Voice Persona Selection for Defense Playback -->
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-500 text-[11px] font-semibold">Examiner Voice:</span>
+            <select id="defense-voice-persona" class="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 focus:outline-none cursor-pointer">
+              <option value="techlead" selected>👨‍💻 Senior Tech Lead (GuyNeural)</option>
+              <option value="strict">👨‍🏫 Strict Professor (ChristopherNeural)</option>
+              <option value="friendly">🧑‍🏫 Friendly Mentor (EricNeural)</option>
+              <option value="indian">🇮🇳 Indian English (PrabhatNeural)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Defense Trap Cards -->
+        <div id="arch-viva-traps-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Populated by renderVivaDefenseTraps() in app.js -->
+        </div>
+      </div>
+
+      <!-- TWO COLUMN DETAILS (STEP-BY-STEP FLOW + CORE FILES DIRECTORY) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT: STEP-BY-STEP DATA FLOW (7 COLS) -->
+        <div class="lg:col-span-7 pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm rounded-2xl">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>⚡</span> End-to-End Data Flow Journey
+            </h3>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Lifecycle</span>
+          </div>
+          
+          <div id="arch-flow-steps" class="space-y-3">
+            <!-- Data flow steps dynamically injected -->
+          </div>
+
+          <!-- Technical Bottlenecks & Viva Traps -->
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <h4 class="text-xs font-bold text-slate-900 mb-2 flex items-center gap-1.5">
+              <span>🥊</span> Architectural Bottlenecks (Professor Cross-Examination Points)
+            </h4>
+            <div id="arch-tradeoffs-box" class="space-y-2 text-xs">
+              <!-- Tradeoffs injected here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: SCANNED FILES & SINGLE RESPONSIBILITY (5 COLS) -->
+        <div class="lg:col-span-5 pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm rounded-2xl">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>📁</span> Component Architecture Roles
+            </h3>
+            <span id="arch-files-count-badge" class="badge-clean badge-blue text-[10px] font-bold">0 Modules</span>
+          </div>
+
+          <div id="arch-files-list" class="space-y-2.5 max-h-[520px] overflow-y-auto pr-1">
+            <!-- File breakdown cards dynamically injected -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FEATURE: SLIDE-OVER CODE & ARCHITECTURE INSPECTOR DRAWER -->
+  <div id="arch-node-drawer-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden transition-opacity" onclick="closeArchNodeDrawer()"></div>
+  
+  <aside id="arch-node-drawer" class="fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200">
+    <!-- Drawer Header -->
+    <div class="p-5 border-b border-slate-200/90 flex items-center justify-between bg-slate-50/80">
+      <div class="flex items-center gap-3">
+        <div id="drawer-node-icon" class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl font-bold shadow-2xs">
+          ⚙️
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="drawer-node-title" class="text-base font-extrabold text-slate-900">Component Inspector</h3>
+            <span id="drawer-node-tier-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 uppercase font-mono">Routing</span>
+          </div>
+          <p id="drawer-node-file" class="text-xs text-slate-500 font-mono mt-0.5">main.py: line 42</p>
+        </div>
+      </div>
+
+      <button type="button" onclick="closeArchNodeDrawer()" class="w-8 h-8 rounded-lg hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition cursor-pointer" title="Close Drawer (Esc)">
+        ✕
+      </button>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-5">
+      <!-- Complexity & Metrics Bar -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Time Complexity</div>
+          <div id="drawer-node-time" class="text-xs font-mono font-bold text-slate-800 mt-0.5">O(1) amortized</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Space Complexity</div>
+          <div id="drawer-node-space" class="text-xs font-mono font-bold text-slate-800 mt-0.5">O(1) buffer</div>
+        </div>
+      </div>
+
+      <!-- Source Code Snippet Section -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span>📄</span> Source Code Implementation
+          </span>
+          <button type="button" onclick="copyDrawerCode()" id="btn-copy-drawer-code" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer">
+            <span>📋 Copy Code</span>
+          </button>
+        </div>
+        <div class="relative rounded-xl overflow-hidden border border-slate-800 bg-[#0f172a] shadow-inner text-xs font-mono">
+          <div class="bg-[#1e293b] px-3 py-1.5 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <span id="drawer-code-lang">python / javascript</span>
+            <span class="text-[10px] text-slate-500 font-mono">Extracted from submission</span>
+          </div>
+          <pre id="drawer-code-content" class="p-3.5 text-slate-200 overflow-x-auto max-h-56 leading-relaxed select-text font-mono text-[11px]"></pre>
+        </div>
+      </div>
+
+      <!-- Worst-Case Failure Point & Viva Defense -->
+      <div class="p-3.5 rounded-xl bg-red-50/70 border border-red-200/80 space-y-1.5">
+        <div class="text-[11px] font-bold text-red-800 flex items-center gap-1.5">
+          <span>⚠️</span> Runtime Failure Point (Examiner Trap)
+        </div>
+        <p id="drawer-node-failure" class="text-xs text-red-950 leading-relaxed font-medium">
+          Potential null reference exception if input parameters fail schema constraints.
+        </p>
+      </div>
+
+      <!-- Defense Tip -->
+      <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 space-y-1.5">
+        <div class="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5">
+          <span>🛡️</span> Architecture Defense Strategy
+        </div>
+        <p id="drawer-node-defense" class="text-xs text-emerald-950 leading-relaxed font-medium">
+          Explain how defensive validation middleware sanitizes all incoming frames before reaching this service.
+        </p>
+      </div>
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
+      <button type="button" onclick="startSimFromDrawerNode()" class="btn-primary py-2 px-3 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-2xs cursor-pointer">
+        <span>▶️ Simulate From Here</span>
+      </button>
+      <button type="button" onclick="askAITutorAboutNode()" class="btn-secondary py-2 px-3 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-2xs cursor-pointer">
+        <span>🤖 Ask AI Tutor</span>
+      </button>
+    </div>
+  </aside>
+
+  <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
+    VivaAI • Autonomous Project Architecture Scanner & Defense Engine
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      initArchitecturePage();
+    });
+  </script>
+</body>
+</html>

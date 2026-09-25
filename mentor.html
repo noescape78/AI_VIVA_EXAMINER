@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tutor | VivaAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-900 bg-grid-pattern min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR -->
+  <header class="nav-header">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 text-slate-900 font-bold text-lg hover:opacity-90">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
+            🎓
+          </div>
+          <span>Viva<span class="text-blue-600">AI</span></span>
+        </a>
+      </div>
+
+      <nav class="flex items-center gap-1 sm:gap-2">
+        <a href="/" class="nav-link">
+          <span>Start Viva</span>
+        </a>
+        <a href="/viva" class="nav-link">
+          <span>Exam Room</span>
+        </a>
+        <a href="/architecture" class="nav-link">
+          <span>System Flow</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 font-bold">New</span>
+        </a>
+        <a href="/report" class="nav-link">
+          <span>Result</span>
+        </a>
+        <a href="/mentor" class="nav-link active">
+          <span>AI Tutor</span>
+        </a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/viva" class="btn-primary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
+          <span>Go to Viva</span> &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN TUTOR CHAT -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
+    
+    <div class="mb-4 flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+      <div>
+        <h1 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <span>🤖</span> AI Viva Tutor & Doubt Clearing
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">
+          Ask questions about your project, get simple explanations, or practice before the viva.
+        </p>
+      </div>
+
+      <button onclick="clearMentorChat()" class="btn-secondary text-xs px-2.5 py-1 rounded-lg">
+        Clear
+      </button>
+    </div>
+
+    <!-- SIMPLE PROMPT CHIPS -->
+    <div class="flex flex-wrap gap-2 mb-3">
+      <button onclick="useQuickPrompt('What are the top 3 viva questions that can come from my project?')" class="text-xs bg-white border border-slate-200 hover:border-blue-500 text-slate-700 px-3 py-1 rounded-full transition shadow-xs">
+        🎯 Top 3 Viva Questions
+      </button>
+      <button onclick="useQuickPrompt('Explain my code in simple words so I can tell the teacher.')" class="text-xs bg-white border border-slate-200 hover:border-blue-500 text-slate-700 px-3 py-1 rounded-full transition shadow-xs">
+        📝 Explain My Code Simply
+      </button>
+      <button onclick="useQuickPrompt('What is the time and space complexity of my algorithm?')" class="text-xs bg-white border border-slate-200 hover:border-blue-500 text-slate-700 px-3 py-1 rounded-full transition shadow-xs">
+        ⏱️ Time & Space Complexity
+      </button>
+      <button onclick="useQuickPrompt('How should I introduce my project in the first 1 minute?')" class="text-xs bg-white border border-slate-200 hover:border-blue-500 text-slate-700 px-3 py-1 rounded-full transition shadow-xs">
+        🗣️ 1-Minute Project Pitch
+      </button>
+    </div>
+
+    <!-- CHAT CONTAINER -->
+    <div class="pro-card bg-white border border-slate-200 flex-1 flex flex-col overflow-hidden min-h-[460px] shadow-sm mb-4">
+      
+      <!-- Messages List -->
+      <div id="mentor-chat-messages" class="flex-1 p-5 overflow-y-auto space-y-3">
+        <div class="flex gap-2.5 items-start">
+          <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+            🤖
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-xl rounded-tl-sm p-3.5 text-xs text-slate-700 max-w-xl shadow-xs leading-relaxed">
+            <p class="font-bold text-slate-900 mb-1">Hello! I am your AI Viva Tutor.</p>
+            <p>You can ask me anything about your project:</p>
+            <ul class="list-disc ml-4 mt-1 space-y-0.5 text-slate-600">
+              <li>"Explain this function in simple Hindi / English"</li>
+              <li>"What can the examiner ask from line 20?"</li>
+              <li>"What is the best way to answer if I don't know the exact answer?"</li>
+            </ul>
+            <p class="mt-2 text-blue-600 font-medium">Click one of the buttons above or type below!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="p-3 bg-white border-t border-slate-200">
+        <form onsubmit="handleMentorSubmit(event)" class="flex gap-2">
+          <input type="text" id="mentor-user-input" placeholder="Type your doubt here..." class="flex-1 text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:bg-white transition">
+          <button type="submit" id="btn-mentor-send" class="btn-primary px-4 py-2 text-xs sm:text-sm font-bold shadow-xs">
+            Send
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      initMentorPage();
+    });
+  </script>
+</body>
+</html>

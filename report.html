@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viva Result | VivaAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    @media print {
+      .no-print, .nav-header, #floating-bot-container { display: none !important; }
+      body { background: white !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 bg-grid-pattern min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR -->
+  <header class="nav-header no-print">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 text-slate-900 font-bold text-lg hover:opacity-90">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
+            🎓
+          </div>
+          <span>Viva<span class="text-blue-600">AI</span></span>
+        </a>
+      </div>
+
+      <nav class="flex items-center gap-1 sm:gap-2">
+        <a href="/" class="nav-link">
+          <span>Start Viva</span>
+        </a>
+        <a href="/viva" class="nav-link">
+          <span>Exam Room</span>
+        </a>
+        <a href="/architecture" class="nav-link">
+          <span>System Flow</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 font-bold">New</span>
+        </a>
+        <a href="/report" class="nav-link active">
+          <span>Result</span>
+        </a>
+        <a href="/mentor" class="nav-link">
+          <span>AI Tutor</span>
+        </a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="btn-secondary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
+          <span>🖨️ Print</span>
+        </button>
+        <a href="/" class="btn-primary text-xs px-3 py-1.5 rounded-lg">New Viva</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SCORECARD -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    
+    <!-- INCOMPLETE EXAM GUARD (Shown if user visits /report before finishing all questions) -->
+    <div id="incomplete-exam-view" class="hidden max-w-xl mx-auto my-10 p-6 sm:p-8 bg-white border border-slate-200 rounded-2xl shadow-sm text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-amber-50 border border-amber-200 text-amber-600 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-xs">
+        🔒
+      </div>
+      <div class="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold uppercase tracking-wider mb-2">
+        Exam Incomplete
+      </div>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2" id="incomplete-title">Viva Exam Not Completed Yet</h2>
+      <p class="text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed" id="incomplete-desc">
+        Your official viva scorecard, AI grade, and topic competency analysis will be generated only after you complete all questions in the Exam Room.
+      </p>
+
+      <!-- Progress bar if viva was partially answered -->
+      <div id="incomplete-progress-section" class="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200 text-left">
+        <div class="flex justify-between items-center text-xs font-semibold mb-1.5">
+          <span class="text-slate-700">Exam Progress</span>
+          <span class="text-blue-600 font-bold" id="incomplete-progress-text">0 / 5 Questions</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+          <div id="incomplete-progress-bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a id="btn-resume-exam" href="/viva" class="btn-primary w-full sm:w-auto py-2.5 px-6 text-xs sm:text-sm font-bold shadow-sm flex items-center justify-center gap-2">
+          <span>Resume Viva Exam &rarr;</span>
+        </a>
+        <a href="/" class="btn-secondary w-full sm:w-auto py-2.5 px-5 text-xs font-semibold">
+          Start New Viva
+        </a>
+      </div>
+    </div>
+
+    <!-- COMPLETED OFFICIAL SCORECARD (Rendered ONLY when full viva is completed) -->
+    <div id="completed-report-view" class="hidden">
+      
+      <!-- RESULT CARD -->
+      <div class="pro-card p-6 bg-white border border-slate-200 shadow-sm mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-5">
+          <div>
+            <span class="badge-clean badge-blue text-[10px] font-bold uppercase mb-1">Official Viva Scorecard</span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900" id="report-project-title">Your Project</h1>
+            <p class="text-xs text-slate-500 mt-1">
+              Student: <strong class="text-slate-800" id="report-student-name">Student</strong> • 
+              Examiner: <span id="report-examiner-name" class="font-medium text-slate-700">Strict Mode</span> • 
+              Date: <span id="report-date">Today</span>
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="text-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-xl">
+              <span class="text-[11px] text-blue-600 font-bold uppercase">Grade</span>
+              <div class="text-2xl sm:text-3xl font-black text-blue-700" id="report-grade">--</div>
+            </div>
+            <div class="text-center px-4 py-2 bg-slate-900 text-white rounded-xl">
+              <span class="text-[11px] text-slate-400 font-bold uppercase">Total Score</span>
+              <div class="text-2xl sm:text-3xl font-black text-emerald-400" id="report-score">--<span class="text-xs text-slate-400 font-normal">/10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 SUMMARY METRICS (Populated dynamically) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-semibold text-slate-500">Code Understanding</div>
+            <div class="text-xl font-bold text-slate-900 mt-1" id="authorship-score">--%</div>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="authorship-desc">Evaluated from your actual responses.</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-semibold text-slate-500">Concept Depth</div>
+            <div class="text-xl font-bold text-slate-900 mt-1" id="depth-score">-- / 10</div>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="depth-desc">Accuracy of technical explanations.</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-semibold text-slate-500">Exam Integrity</div>
+            <div class="text-xl font-bold text-slate-900 mt-1" id="integrity-score">--</div>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="integrity-desc">Tab switch monitoring status.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DYNAMIC TOPIC COMPETENCIES (Zero mock data - 100% computed from real question logs) -->
+      <div class="pro-card p-6 bg-white border border-slate-200 shadow-sm mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <span>📊</span> Topic Competencies
+          </h2>
+          <span class="text-xs text-slate-500">Computed from answered viva questions</span>
+        </div>
+
+        <div class="space-y-3.5 max-w-2xl" id="competency-bars">
+          <!-- Dynamically populated from actual questionsLog -->
+        </div>
+
+        <!-- Performance Highlights (Strengths & Needs Revision) -->
+        <div class="mt-5 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3" id="performance-highlights">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- INTERACTIVE SKILL KNOWLEDGE GRAPH -->
+      <div class="pro-card p-6 bg-white border border-slate-200 shadow-sm mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span>🗺️</span> Interactive Skill Knowledge Graph
+            </h2>
+            <p class="text-xs text-slate-500">Visual concept map of your viva defense. Click any node to inspect examiner takeaways.</p>
+          </div>
+          <!-- Legend -->
+          <div class="flex items-center gap-3 text-[11px] font-medium text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Mastered (&ge;75%)</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Developing (50-74%)</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Gap (&lt;50%)</span>
+          </div>
+        </div>
+
+        <!-- GRAPH CANVAS WRAPPER -->
+        <div id="knowledge-graph-wrapper" class="relative bg-slate-50/80 border border-slate-200 rounded-xl p-5 overflow-hidden">
+          <div id="knowledge-graph-nodes" class="flex flex-wrap items-center justify-center gap-3.5 py-4">
+            <!-- Dynamically populated interactive nodes -->
+          </div>
+        </div>
+
+        <!-- INTERACTIVE NODE DETAIL DRAWER -->
+        <div id="graph-node-detail" class="hidden mt-4 p-4 rounded-xl border border-blue-200 bg-blue-50/70 transition-all duration-300">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-blue-200/60">
+            <div class="flex items-center gap-2">
+              <span id="detail-node-badge" class="badge-clean badge-blue text-[10px] font-bold">Node Concept</span>
+              <span id="detail-node-score" class="text-xs font-bold text-slate-800">Score: 8.5/10</span>
+            </div>
+            <button type="button" onclick="closeGraphNodeDetail()" class="text-slate-400 hover:text-slate-700 text-xs font-bold px-1.5 py-0.5 rounded hover:bg-white/80">✕ Close</button>
+          </div>
+          <h4 id="detail-node-title" class="font-bold text-xs sm:text-sm text-slate-900 mb-1">Concept Name</h4>
+          <p id="detail-node-question" class="text-xs text-slate-600 mb-2 italic bg-white/60 p-2 rounded border border-blue-100">"Question asked"</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="p-2.5 bg-white rounded-lg border border-slate-200 shadow-xs">
+              <strong class="text-slate-700 block mb-0.5">Your Response:</strong>
+              <span id="detail-node-answer" class="text-slate-600 leading-relaxed">...</span>
+            </div>
+            <div class="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-950 shadow-xs">
+              <strong class="text-emerald-800 block mb-0.5">💡 Examiner's Golden Takeaway:</strong>
+              <span id="detail-node-ideal" class="text-emerald-900 leading-relaxed">...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE 4: SYSTEM ARCHITECTURE BLUEPRINT (INTERACTIVE MERMAID FLOWCHART) -->
+      <div id="report-architecture-section" class="pro-card p-6 bg-white border border-slate-200 shadow-sm mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span>🏗️</span> System Architecture Blueprint & Data Flow
+            </h2>
+            <p class="text-xs text-slate-500">Live component map & data pipeline analyzed from your project codebase</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold" id="report-pattern-badge">
+            Architecture Blueprint
+          </span>
+        </div>
+
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 mb-4">
+          <div id="report-mermaid-stage" class="mermaid-diagram-container">
+            <div class="text-xs text-slate-400">Loading Architecture Blueprint...</div>
+          </div>
+        </div>
+
+        <div id="report-files-breakdown" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+          <!-- Dynamically populated file responsibilities -->
+        </div>
+      </div>
+
+      <!-- REVISION FLASHCARDS (TAP TO FLIP) -->
+      <div class="pro-card p-6 bg-white border border-slate-200 shadow-sm mb-6">
+        <div class="mb-3">
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <span>💡</span> Quick Revision Flashcards
+          </h2>
+          <p class="text-xs text-slate-500">Tap cards to see the ideal answers for your project</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="flashcards-grid">
+          <!-- Dynamically rendered from actual viva questions -->
+        </div>
+      </div>
+
+      <!-- QUESTIONS & ANSWERS LOG -->
+      <div class="pro-card p-6 bg-white border border-slate-200 shadow-sm mb-6">
+        <h2 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <span>📋</span> Viva Transcript & Evaluation
+        </h2>
+        
+        <div class="space-y-4" id="viva-questions-log">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- BOTTOM BUTTONS -->
+      <div class="text-center pb-8 no-print flex flex-wrap items-center justify-center gap-3">
+        <button type="button" onclick="retakeVivaFromReport()" class="btn-secondary py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-100 text-indigo-700 transition">
+          <span>🔄 Retake Viva (New Questions)</span>
+        </button>
+        <a href="/" class="btn-secondary py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5">
+          <span>📁 Test Another Project</span>
+        </a>
+        <a href="/mentor" class="btn-primary py-2.5 px-5 text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <span>Discuss Doubts with AI Tutor &rarr;</span>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FLOATING BOT -->
+  <div id="floating-bot-container">
+    <button onclick="toggleBotDrawer()" class="floating-bot-trigger" title="AI Help">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+    </button>
+
+    <div id="bot-drawer" class="bot-panel-drawer">
+      <div class="bg-slate-900 text-white p-3.5 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span>🤖</span>
+          <h4 class="font-bold text-xs">AI Viva Tutor</h4>
+        </div>
+        <button onclick="toggleBotDrawer()" class="text-slate-400 hover:text-white text-xs">✕</button>
+      </div>
+      <div id="bot-chat-log" class="flex-1 p-3 overflow-y-auto space-y-2 text-xs bg-slate-50">
+        <div class="p-2 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-xs">
+          Ask me to explain any question from your scorecard!
+        </div>
+      </div>
+      <div class="p-2.5 bg-white border-t border-slate-200 flex gap-2">
+        <input type="text" id="bot-input" placeholder="Type here..." class="flex-1 text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500" onkeydown="if(event.key==='Enter') sendBotMessage()">
+        <button onclick="sendBotMessage()" class="btn-primary text-xs px-3 py-1.5">Ask</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      renderReportScreen();
+    });
+  </script>
+</body>
+</html>

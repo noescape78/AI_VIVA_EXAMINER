@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Viva Examiner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-900 bg-grid-pattern min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR -->
+  <header class="nav-header">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 text-slate-900 font-bold text-lg hover:opacity-90">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
+            🎓
+          </div>
+          <span>Viva<span class="text-blue-600">AI</span></span>
+        </a>
+      </div>
+
+      <!-- Navigation Links (Fully functional) -->
+      <nav class="flex items-center gap-1 sm:gap-2">
+        <a href="/" class="nav-link active">
+          <span>Start Viva</span>
+        </a>
+        <a href="/viva" class="nav-link">
+          <span>Exam Room</span>
+        </a>
+        <a href="/architecture" class="nav-link">
+          <span>System Flow</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 font-bold">New</span>
+        </a>
+        <a href="/report" class="nav-link">
+          <span>Result</span>
+        </a>
+        <a href="/mentor" class="nav-link">
+          <span>AI Tutor</span>
+        </a>
+      </nav>
+
+      <!-- Clean Status Indicator -->
+      <div class="flex items-center gap-2 text-xs text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="font-medium">Online</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    
+    <!-- Hero Header - Clean & Focused -->
+    <div class="text-center max-w-2xl mx-auto mb-7">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-semibold mb-2.5 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+        <span>Autonomous Technical Viva & Code Defense</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        AI Viva <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">Examiner</span>
+      </h1>
+      <p class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        Practice your project viva with an adaptive AI examiner. Speak or type your answers, defend code architecture, and receive instant grading with actionable feedback.
+      </p>
+    </div>
+
+    <!-- MAIN FORM GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      
+      <!-- LEFT: YOUR PROJECT CODE (7 COLS) -->
+      <div class="lg:col-span-7 pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between rounded-2xl">
+        <div>
+          <!-- Header Bar with Title & Tabs -->
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 mb-3.5">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">💻</span>
+              <div>
+                <h2 class="text-sm font-bold text-slate-900">Project Codebase</h2>
+                <p class="text-[11px] text-slate-500">Provide your code to generate targeted viva questions</p>
+              </div>
+            </div>
+            
+            <!-- Segmented Upload Tabs -->
+            <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+              <button id="tab-btn-paste" onclick="switchUploadTab('paste')" class="px-3 py-1 rounded-md bg-white text-slate-900 shadow-xs transition">Paste Code</button>
+              <button id="tab-btn-upload" onclick="switchUploadTab('upload')" class="px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">Upload File/Folder</button>
+              <button id="tab-btn-github" onclick="switchUploadTab('github')" class="px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">🐙 GitHub Repo</button>
+            </div>
+          </div>
+
+          <!-- Quick Templates Bar (Embedded cleanly where code is loaded) -->
+          <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-slate-50/80 border border-slate-200/60 rounded-xl mb-3.5">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] font-semibold text-slate-500">Presets:</span>
+              <button type="button" onclick="loadQuickExample('ecommerce')" class="text-[11px] font-medium px-2 py-0.5 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 rounded-md text-slate-600 transition shadow-2xs cursor-pointer">
+                Python / API
+              </button>
+              <button type="button" onclick="loadQuickExample('ml')" class="text-[11px] font-medium px-2 py-0.5 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 rounded-md text-slate-600 transition shadow-2xs cursor-pointer">
+                ML / Data
+              </button>
+              <button type="button" onclick="loadQuickExample('web')" class="text-[11px] font-medium px-2 py-0.5 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 rounded-md text-slate-600 transition shadow-2xs cursor-pointer">
+                Web / Auth
+              </button>
+              <button type="button" onclick="clearForm()" class="text-[11px] font-medium px-2 py-0.5 bg-white border border-slate-200 hover:border-red-400 hover:text-red-500 rounded-md text-slate-400 transition shadow-2xs cursor-pointer">
+                Clear
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span id="code-lines-count">0 lines</span>
+            </div>
+          </div>
+
+          <!-- Student & Project Name Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <span>👤</span> Student Name
+              </label>
+              <input type="text" id="student-name" placeholder="Enter your name" class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 transition">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <span>📦</span> Project Name
+              </label>
+              <input type="text" id="project-title" placeholder="e.g. Online Store / ML Pipeline" class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 transition">
+            </div>
+          </div>
+
+          <!-- TAB 1: PASTE CODE -->
+          <div id="tab-content-paste">
+            <!-- IDE Editor Frame -->
+            <div class="editor-frame">
+              <div class="editor-header-bar">
+                <div class="flex items-center gap-1.5">
+                  <span class="editor-dot editor-dot-red"></span>
+                  <span class="editor-dot editor-dot-yellow"></span>
+                  <span class="editor-dot editor-dot-green"></span>
+                  <span class="ml-2 px-2 py-0.5 bg-slate-800 text-[11px] font-mono text-slate-300 rounded font-medium border border-slate-700">source_code.py</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">UTF-8 • Raw Source</span>
+              </div>
+              <textarea id="project-code" rows="10" class="w-full p-3.5 font-mono text-xs bg-[#090D16] text-slate-200 focus:outline-none transition resize-y leading-relaxed" placeholder="// Paste your project code here (.py, .js, .cpp, .java, etc.)..."></textarea>
+            </div>
+
+            <div class="mt-3">
+              <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                <span class="flex items-center gap-1"><span>📝</span> Project Summary / Notes</span>
+                <span class="text-[10px] text-slate-400 font-normal">Optional</span>
+              </label>
+              <textarea id="project-doc" rows="2" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 transition" placeholder="Short description of what your project does (helps AI ask relevant questions)..."></textarea>
+            </div>
+          </div>
+
+          <!-- TAB 2: UPLOAD FILE / FOLDER -->
+          <div id="tab-content-upload" class="hidden">
+            <div id="dropzone" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-7 text-center bg-slate-50 transition cursor-pointer">
+              <div class="text-3xl mb-2">📁</div>
+              <p class="text-sm font-semibold text-slate-800">Drop your Project Folder, ZIP, or Files here</p>
+              <p class="text-xs text-slate-500 mt-1">Automatically scans all code files and ignores junk (node_modules, venv, .git)</p>
+              
+              <input type="file" id="file-input" multiple class="hidden" accept=".py,.js,.jsx,.ts,.tsx,.cpp,.c,.java,.html,.css,.json,.txt,.pdf,.zip">
+              <input type="file" id="folder-input" webkitdirectory directory multiple class="hidden">
+              
+              <div class="mt-3 flex items-center justify-center gap-2">
+                <button type="button" onclick="document.getElementById('folder-input').click()" class="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 shadow-xs">
+                  <span>📁 Upload Entire Folder</span>
+                </button>
+                <button type="button" onclick="document.getElementById('file-input').click()" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 shadow-xs">
+                  <span>📄 Choose Files / ZIP</span>
+                </button>
+              </div>
+            </div>
+            <div id="file-list" class="mt-3 space-y-1.5 max-h-48 overflow-y-auto"></div>
+          </div>
+
+          <!-- TAB 3: GITHUB REPO INGESTION -->
+          <div id="tab-content-github" class="hidden">
+            <div class="p-6 border border-slate-200 rounded-xl bg-slate-50 text-left">
+              <div class="flex items-center gap-2.5 mb-2">
+                <span class="text-2xl">🐙</span>
+                <div>
+                  <h3 class="text-xs font-bold text-slate-900">Scan Public GitHub Repository</h3>
+                  <p class="text-[11px] text-slate-500">Clones and extracts core architecture code in under 2 seconds.</p>
+                </div>
+              </div>
+
+              <div class="mt-3 flex gap-2">
+                <input type="text" id="github-repo-url" placeholder="https://github.com/username/project" class="flex-1 text-xs px-3 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 font-mono" onkeydown="if(event.key==='Enter') fetchGitHubRepo()">
+                <button type="button" id="btn-fetch-github" onclick="fetchGitHubRepo()" class="btn-primary text-xs py-2 px-4 shadow-xs flex items-center gap-1 font-bold whitespace-nowrap">
+                  <span>Scan Repo</span>
+                  <span>&rarr;</span>
+                </button>
+              </div>
+
+              <!-- GitHub Result / Status Banner -->
+              <div id="github-status-box" class="mt-3 hidden"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: EXAMINER SETTINGS & START CTA (5 COLS) -->
+      <div class="lg:col-span-5 pro-card p-5 sm:p-6 bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between rounded-2xl">
+        <div class="space-y-4">
+          <!-- Card Header -->
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">⚙️</span>
+              <div>
+                <h2 class="text-sm font-bold text-slate-900">Examiner & Session Setup</h2>
+                <p class="text-[11px] text-slate-500">Configure persona, style, and testing mode</p>
+              </div>
+            </div>
+            <span class="badge-clean badge-blue text-[10px] font-bold">Standard Viva</span>
+          </div>
+
+          <!-- Section 1: Examiner Style -->
+          <div>
+            <label class="block text-xs font-bold text-slate-800 mb-2">Examiner Persona</label>
+            <div class="space-y-2">
+              <!-- Strict -->
+              <label class="setup-option-card flex items-start gap-3 p-2.5 rounded-xl cursor-pointer">
+                <input type="radio" name="persona" value="strict" checked class="mt-0.5 text-blue-600">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs text-slate-900">Strict Examiner</span>
+                    <span class="badge-clean badge-red text-[10px]">Tough</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Deep dive on code logic, edge cases, time/space complexity.</p>
+                </div>
+              </label>
+
+              <!-- Practical -->
+              <label class="setup-option-card flex items-start gap-3 p-2.5 rounded-xl cursor-pointer">
+                <input type="radio" name="persona" value="techlead" class="mt-0.5 text-blue-600">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs text-slate-900">Practical Tech Lead</span>
+                    <span class="badge-clean badge-blue text-[10px]">Real-World</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Focuses on real architecture, debugging, error handling & design choices.</p>
+                </div>
+              </label>
+
+              <!-- Easy -->
+              <label class="setup-option-card flex items-start gap-3 p-2.5 rounded-xl cursor-pointer">
+                <input type="radio" name="persona" value="friendly" class="mt-0.5 text-blue-600">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs text-slate-900">Friendly Mentor</span>
+                    <span class="badge-clean badge-green text-[10px]">Basic</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Straightforward conceptual queries & fundamental code walk-through.</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section 2: Examination Format Choice -->
+          <div>
+            <label class="block text-xs font-bold text-slate-800 mb-2">Examination Format</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="setup-option-card flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer">
+                <input type="radio" name="exam_format" value="oral" checked class="text-blue-600">
+                <div>
+                  <div class="text-xs font-bold text-slate-900">🎙️ Oral Defense</div>
+                  <div class="text-[10px] text-slate-500">Live Voice + AI Audio</div>
+                </div>
+              </label>
+
+              <label class="setup-option-card flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer">
+                <input type="radio" name="exam_format" value="mcq" class="text-blue-600">
+                <div>
+                  <div class="text-xs font-bold text-slate-900">⚡ Rapid MCQ</div>
+                  <div class="text-[10px] text-slate-500">Timed 4-Choice Quiz</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section 3: Questions & Response Mode -->
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Questions</label>
+              <select id="viva-rounds" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2 font-medium focus:outline-none focus:border-blue-500">
+                <option value="3">3 Questions (Quick)</option>
+                <option value="5" selected>5 Questions (Standard)</option>
+                <option value="8">8 Questions</option>
+                <option value="10">10 Questions (Full)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Response Mode</label>
+              <select id="voice-mode" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2 font-medium focus:outline-none focus:border-blue-500">
+                <option value="enabled" selected>Voice + Text</option>
+                <option value="text_only">Text Only</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Section 4: Devil's Advocate Highlight -->
+          <div class="p-2.5 rounded-xl bg-red-50/80 border border-red-200/80 text-[11px] text-red-800 flex items-start gap-2">
+            <span class="text-sm">🥊</span>
+            <div>
+              <strong class="font-semibold">Round 2: Devil's Advocate Mode</strong>
+              <p class="text-[10px] text-red-600 mt-0.5">The AI examiner will dynamically cross-question and challenge your framework & design decisions.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Primary Action Button (Anchored directly inside card footer!) -->
+        <div class="mt-5 pt-3 border-t border-slate-100">
+          <button id="btn-start-viva" onclick="startVivaSession()" class="btn-hero-start w-full py-3.5 text-white text-sm sm:text-base font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer">
+            <span>Start Viva Defense</span>
+            <span class="text-lg leading-none">&rarr;</span>
+          </button>
+          <p class="text-[10px] text-center text-slate-400 mt-2">Zero setup required • Instant question generation & scoring</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FLOATING AI BOT -->
+  <div id="floating-bot-container">
+    <button onclick="toggleBotDrawer()" class="floating-bot-trigger" title="AI Help">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+    </button>
+
+    <div id="bot-drawer" class="bot-panel-drawer">
+      <div class="bg-slate-900 text-white p-3.5 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🤖</span>
+          <div>
+            <h4 class="font-bold text-xs">AI Viva Tutor</h4>
+            <p class="text-[10px] text-slate-400">Ask doubts about your project</p>
+          </div>
+        </div>
+        <button onclick="toggleBotDrawer()" class="text-slate-400 hover:text-white text-xs">✕</button>
+      </div>
+
+      <div id="bot-chat-log" class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs bg-slate-50">
+        <div class="p-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 shadow-xs">
+          👋 Have a doubt about your code? Type it below and I'll explain it simply!
+        </div>
+      </div>
+
+      <div class="p-2.5 bg-white border-t border-slate-200 flex gap-2">
+        <input type="text" id="bot-input" placeholder="Type your doubt..." class="flex-1 text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500" onkeydown="if(event.key==='Enter') sendBotMessage()">
+        <button onclick="sendBotMessage()" class="btn-primary text-xs px-3 py-1.5">Ask</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
+    VivaAI • Simple & Autonomous Viva Examiner
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
