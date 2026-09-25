@@ -12,7 +12,7 @@
 ---
 
 ## 💡 The Problem
-In college vivas and hackathon project evaluations, judges and professors face two critical problems:
+In university viva exams, technical defenses, and code evaluation panels, examiners face two critical problems:
 1. **The "ChatGPT / Copy-Paste" Epidemic**: Students present impressive projects but cannot explain how their code actually works under the hood or what happens when a race condition or edge case occurs.
 2. **Static & Boring Architecture Diagrams**: Students draw dead PNG architecture diagrams that don't explain the runtime data journey, algorithmic complexity, or failure points.
 
@@ -37,7 +37,7 @@ In college vivas and hackathon project evaluations, judges and professors face t
  └───────────┘    └────────────────┘     └─────────────┘      └─────────────┘    └───────────┘
 ```
 
-### 1. 🌐 System Flow & Architecture Blueprint (`/architecture`) — *The Hackathon Showstopper*
+### 1. 🌐 Interactive System Flow & Architecture Blueprint (`/architecture`)
 - **FigJam / Miro Visual Aesthetics**: Clean pastel nodes, bold dark headers, orthogonal connectors, and smooth pan/zoom canvas.
 - **Interactive Flow Tracer Simulation**:
   - **Happy Path Scenario**: Traces nominal data packets through every pipeline stage with live payload tickers and animated glowing nodes.
@@ -125,7 +125,7 @@ Open **[http://localhost:8000](http://localhost:8000)** in your browser!
 
 ---
 
-## 🛡️ Hackathon Proof: Zero-Crash Resilience Architecture
+## 🛡️ Enterprise-Grade Reliability & Fault-Tolerance Architecture
 - **Dual-Engine Auto-Failover**: Gemini Flash Key 1 $\rightarrow$ Gemini Flash Key 2 $\rightarrow$ OpenRouter Multi-Key $\rightarrow$ Deterministic Offline Engine.
 - **Client-Side Archive Sanitization**: Drops gigabytes of `node_modules` and `venv` junk before processing, preventing memory spikes.
 - **Guaranteed Node Uniqueness Engine**: Code snippet fingerprint cache ensures zero duplicate lines across architectural diagram nodes.
@@ -133,4 +133,4 @@ Open **[http://localhost:8000](http://localhost:8000)** in your browser!
 ---
 
 ## 📜 License
-Released under the [MIT License](LICENSE). Built with ❤️ for college viva preparation and hackathon excellence.
+Released under the [MIT License](LICENSE). Built with ❤️ for college viva preparation, technical defense mastery, and software engineering excellence.
