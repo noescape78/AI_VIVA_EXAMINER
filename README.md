@@ -105,6 +105,18 @@ Practice answering technical questions out loud with three realistic examiner st
 
 ---
 
+### 4. 🤖 AI Viva Tutor & Doubt Clearing Lounge (`/mentor`)
+
+A dedicated 24/7 interactive tutor to resolve code doubts and build confidence before your actual viva:
+
+- 🎯 **Predictive Viva Questions**: Discovers and practices the top questions examiners will ask based on your uploaded codebase.
+- 📝 **Plain-English Code Explanations**: Breaks down complex functions and logic into simple, conversational explanations you can speak aloud to your professor.
+- ⏱️ **Big-O Complexity Coaching**: Explains time and space complexity in plain terms with practical edge-case examples.
+- 🗣️ **1-Minute Project Pitch**: Generates a clear, structured opening introduction to kick off your project presentation with confidence.
+- 🔗 **Architecture Canvas Deep-Link**: Clicking *"Ask AI Tutor"* inside any node inspector on `/architecture` instantly pre-fills targeted questions about that component's failure modes and viva defense.
+
+---
+
 ## 🛠️ Tech Stack
 
 | Component | Technology | Purpose |
