@@ -13,6 +13,10 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
 </p>
 
+<p align="center">
+  <img src="Screenshot/HOMEPAGE.png" alt="VivaAI Platform Overview" width="100%" />
+</p>
+
 ---
 
 ## 💡 The Real Problem
@@ -60,6 +64,10 @@ In university project vivas and technical defenses, students often run into the 
 
 ### 1. 💻 Universal Codebase Scanner & Ingestion Engine (`/`)
 
+<p align="center">
+  <img src="Screenshot/HOMEPAGE.png" alt="Project Ingestion & Setup Screen" width="100%" />
+</p>
+
 Feed your project to VivaAI in whatever format you have it:
 
 - 🐙 **Public GitHub Repository Scanner**: Simply paste any public repo URL (`https://github.com/username/project`). VivaAI recursively traverses the repository tree, extracts essential architectural modules, and prepares a tailored viva session in seconds.
@@ -72,6 +80,18 @@ Feed your project to VivaAI in whatever format you have it:
 ---
 
 ### 2. 🌐 Interactive System Flow & Multi-Perspective Architecture (`/architecture`)
+
+<p align="center">
+  <img src="Screenshot/SYSTEMFLOW1.png" alt="Multi-Perspective Architecture Blueprint & Flow Simulator" width="100%" />
+</p>
+
+<p align="center">
+  <img src="Screenshot/SYSTEMFLOW2.png" alt="Layered Subsystems & Slide-Over Code Drawer" width="100%" />
+</p>
+
+<p align="center">
+  <img src="Screenshot/SYSTEMFLOW3.png" alt="Lifecycle Steps & Professor Cross-Examination Traps" width="100%" />
+</p>
 
 - 📐 **3 Architectural Perspectives (Perspective Switcher)**:
   - 🌊 **Data Flow Pipeline**: Sequential end-to-end request lifecycle from client ingress to database persistence and client response envelopes.
@@ -97,6 +117,10 @@ Feed your project to VivaAI in whatever format you have it:
 
 ### 3. 🎙️ Live Oral & MCQ Viva Chamber (`/viva`)
 
+<p align="center">
+  <img src="Screenshot/EXAMROOM.png" alt="Live Oral & MCQ Viva Chamber with Devil Mode" width="100%" />
+</p>
+
 Experience realistic viva conditions tailored to your preparation style:
 
 - 🥊 **Round 2: Devil's Advocate Mode (Grilling Mode)**:
@@ -114,6 +138,18 @@ Experience realistic viva conditions tailored to your preparation style:
 
 ### 4. 📊 Viva Scorecard & Authorship Radar (`/report`)
 
+<p align="center">
+  <img src="Screenshot/RESULT1.png" alt="Official Viva Scorecard & Competencies" width="100%" />
+</p>
+
+<p align="center">
+  <img src="Screenshot/RESUSLT2.png" alt="Interactive Skill Knowledge Graph & Embedded Flow" width="100%" />
+</p>
+
+<p align="center">
+  <img src="Screenshot/RESULT3.png" alt="Quick Revision Flashcards & Viva Evaluation Transcript" width="100%" />
+</p>
+
 - 🕵️‍♂️ **Code Authorship Meter**: Evaluates whether the candidate genuinely understands the code mechanics or is bluffing using copied code.
 - 🎯 **Knowledge Gap Radar**: Visual breakdown showing which areas need review (Concurrency, Architecture, Error Handling, or Algorithmic Complexity).
 - ⚡ **60-Second Flashcards**: Quick summary cards to revise critical points right before your actual viva.
@@ -121,6 +157,10 @@ Experience realistic viva conditions tailored to your preparation style:
 ---
 
 ### 5. 🤖 AI Viva Tutor & Doubt Clearing Lounge (`/mentor`)
+
+<p align="center">
+  <img src="Screenshot/AI-TUTOR.png" alt="AI Viva Tutor & Doubt Clearing Lounge" width="100%" />
+</p>
 
 A dedicated 24/7 interactive tutor to resolve code doubts and build confidence before your actual viva:
 
