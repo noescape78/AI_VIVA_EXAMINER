@@ -1,62 +1,119 @@
-# VivaAI - Interactive Viva Prep & Code Architecture Simulator
+# VivaAI — Interactive Viva Prep & Code Architecture Simulator
 
-An interactive tool built for engineering students to prepare for college viva exams and technical project defenses. It scans your codebase, generates an interactive system flow diagram, tests your understanding through voice-driven viva simulations, and points out architectural edge cases before your professor asks about them.
+<p align="center">
+  <strong>Analyze your codebase, simulate viva cross-examinations, and trace end-to-end data flow before viva day.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/Google%20Gemini-Flash-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini" />
+  <img src="https://img.shields.io/badge/Voice-Microsoft%20Edge--TTS-0078D4?style=flat-square" alt="Edge-TTS" />
+  <img src="https://img.shields.io/badge/Diagrams-Mermaid.js-FF3670?style=flat-square&logo=mermaid&logoColor=white" alt="Mermaid" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
+</p>
 
 ---
 
-## What It Does
+## Overview
 
-Most students build good projects but struggle during viva when professors ask deep technical questions like:
-- *"What happens if two users trigger this action at the exact same millisecond?"*
-- *"Why did you use this data structure or library instead of standard alternatives?"*
-- *"What is the time complexity here, and where can this code fail at runtime?"*
+In technical project defenses and college vivas, examiners often ask questions beyond the basic features:
+- *"What happens if two concurrent requests hit this function simultaneously?"*
+- *"Where is the single point of failure in your architecture?"*
+- *"What is the worst-case time complexity, and how do you handle unhandled exceptions?"*
 
-VivaAI helps you practice for these exact questions before facing your examiner.
+**VivaAI** gives students a realistic practice environment. It ingests your project code, compiles a visual architecture flow diagram, simulates common viva traps with neural voice audio, and tests your understanding with oral viva questions.
 
 ---
 
-## Key Features
+## System Flow Architecture
+
+```
+                    ┌────────────────────────────────────────────────────────┐
+                    │                      VivaAI.Pro                        │
+                    └───────────────────────────┬────────────────────────────┘
+                                                │
+       ┌──────────────────┬─────────────────────┼────────────────────┬─────────────────┐
+       ▼                  ▼                     ▼                    ▼                 ▼
+ ┌───────────┐    ┌────────────────┐     ┌─────────────┐      ┌─────────────┐    ┌───────────┐
+ │  / (Home) │    │ /architecture  │     │    /viva    │      │   /report   │    │  /mentor  │
+ │ Project   │    │ Interactive    │     │ Live Oral   │      │ Scorecard & │    │ AI Viva   │
+ │ Ingestion │    │ Flow Tracer    │     │ Examination │      │ Gap Radar   │    │  Copilot  │
+ └───────────┘    └────────────────┘     └─────────────┘      └─────────────┘    └───────────┘
+```
+
+---
+
+## Core Features
+
+| View | Route | Primary Purpose | Key Highlights |
+| :--- | :--- | :--- | :--- |
+| **System Flow Canvas** | `/architecture` | Visual data flow & blueprint inspection | FigJam pastel diagram, step-by-step token tracer, click-to-inspect code drawer |
+| **Oral Viva Room** | `/viva` | Realistic voice-driven viva defense | Microsoft Edge-TTS voice audio, microphone input, reactive avatar, anti-cheat tab monitor |
+| **Viva Scorecard** | `/report` | Technical performance evaluation | Authorship confidence meter, topic-by-topic knowledge gap radar, 60s revision cards |
+| **AI Viva Mentor** | `/mentor` | Doubt resolution & practice lounge | Code breakdown, complex algorithm explanation, customized follow-up practice |
+| **Project Ingestion** | `/` | Codebase upload & scanner | 1-click preset samples (FastAPI, ML, Web Auth), ZIP/Folder upload with junk filter, GitHub import |
+
+---
 
 ### 1. Interactive System Flow & Architecture Tracer (`/architecture`)
-- Automatically generates a visual flow diagram of your project (UI -> API -> Validation -> Service -> Database -> Response).
-- Lets you trace the data flow step-by-step for both normal requests ("Happy Path") and invalid inputs ("Rejection Path").
-- Highlights common viva traps for your stack (like database race conditions, missing input checks, or unhandled exceptions).
-- Click any node in the diagram to inspect its source code, Big-O time and space complexity, and failure modes.
 
-### 2. Voice Viva Simulation (`/viva`)
-- Simulates a real viva interview using voice (powered by Edge-TTS).
-- Choose between different examiner styles:
-  - **Dr. Sharma (Strict External)**: Focuses on algorithms, edge cases, and time/space complexity.
-  - **Vikram Rao (Industry Tech Lead)**: Asks about scalability, database locks, and error handling.
-  - **Prof. Ananya (Friendly Mentor)**: Focuses on core concepts and step-by-step logic.
-- Answer using your microphone (Speech-to-Text) or by typing.
+- **Step-by-Step Flow Tracer**:
+  - **Happy Path**: Simulates a valid request traveling from Client $\rightarrow$ API Gateway $\rightarrow$ Validation Guard $\rightarrow$ Domain Service $\rightarrow$ Database $\rightarrow$ Response.
+  - **Rejection Path**: Demonstrates how malformed payloads are caught and rejected by validation layers before reaching the database.
+  - **Controls**: Play/Pause, Step Forward, Replay, and 1x / 1.5x / 2x speed toggles with a live payload ticker.
 
-### 3. Performance Scorecard & Concept Review (`/report`)
-- Evaluates your answers and rates how deeply you understand each part of your code.
-- Shows which topics you need to revise (concurrency, complexity, error handling, etc.).
-- Generates quick revision flashcards to review right before your exam.
+- **Professor Cross-Examination & Viva Defense Counter**:
+  - Highlights top 3 hidden architectural traps professors frequently target (race conditions, connection pool limits, and single-point-of-failure).
+  - Provides a **Senior Defense Script** with clear talking points.
+  - **Audio Playback**: Uses Microsoft Edge-TTS with live animated equalizer sound waves.
 
-### 4. AI Mentor Chat (`/mentor`)
-- Practice follow-up questions or ask for simple explanations of tricky parts in your codebase.
+- **Slide-Over Code & Complexity Inspector**:
+  - Click any node on the canvas to inspect its source code.
+  - **100% Unique Code Mapping**: Each node displays its specific function or schema rather than repeating the same file.
+  - Displays accurate **Big-O Time Complexity**, **Space Complexity**, and runtime failure modes.
 
-### 5. Flexible Project Input (`/`)
-- Upload your project folder or `.zip` file (junk like `node_modules` and `venv` is automatically filtered out).
-- Paste a public GitHub repository link.
-- Or test immediately with 1-click built-in examples (FastAPI E-Commerce, Scikit-Learn ML, or Node.js Auth).
+---
+
+### 2. Live Oral Viva Chamber (`/viva`)
+
+Experience realistic viva practice with three distinct examiner personas:
+
+| Persona | Role | Focus Areas | Question Style |
+| :--- | :--- | :--- | :--- |
+| **Dr. Sharma** | Strict External | Data structures, Big-O complexity, edge cases | Probing, detailed, technical |
+| **Vikram Rao** | Industry Tech Lead | Concurrency, scalability, database transactions | Practical, architecture-oriented |
+| **Prof. Ananya** | Friendly Guide | Core fundamentals, code structure, business logic | Encouraging, guided, conceptual |
+
+- **Speech-to-Text & Text-to-Speech**: Speak your answers into your microphone or type them manually.
+- **Anti-Cheat Tab Monitor**: Logs background tab switching during the active exam session.
+
+---
+
+### 3. Viva Scorecard & Authorship Radar (`/report`)
+
+- **Code Authorship Analysis**: Evaluates your conceptual mastery versus memorization to estimate genuine code understanding.
+- **Knowledge Gap Breakdown**: Visual bars highlight strengths and weak spots across System Architecture, Concurrency, Algorithms, and Error Handling.
+- **60-Second Revision Flashcards**: Quick summary cards to refresh key mechanisms before heading into your real exam.
 
 ---
 
 ## Tech Stack
 
-- **Backend**: Python 3.10+, FastAPI, Uvicorn
-- **AI Models**: Google Gemini Flash (fast sub-second responses) with OpenRouter fallback
-- **Voice / Audio**: Microsoft Edge-TTS (free, no API key required)
-- **Diagrams**: Mermaid.js
-- **Frontend**: HTML5, Vanilla JavaScript, Tailwind CSS
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| **Backend** | Python 3.10+, FastAPI | High-performance asynchronous API server |
+| **Server Engine** | Uvicorn + WatchFiles | ASGI server with live reloading |
+| **Language Models** | Google Gemini Flash | Sub-second question generation and evaluation |
+| **Model Fallback** | OpenRouter Pool | Redundant multi-model backup (Llama 3.3, Gemini 2.0) |
+| **Voice Synthesis** | Microsoft Edge-TTS | Realistic neural speech synthesis (free, no API key) |
+| **Diagram Engine** | Mermaid.js v11 | Dynamic client-side flowchart compilation |
+| **ZIP Extraction** | JSZip (Client-Side) | In-browser archive extraction with directory filtering |
+| **UI Styling** | Tailwind CSS | Clean SaaS layout with pastel diagram cards |
 
 ---
 
-## Getting Started
+## Quick Start
 
 ### 1. Clone the repository
 ```bash
@@ -69,7 +126,7 @@ cd AI_VIVA_EXAMINER
 pip install -r requirements.txt
 ```
 
-### 3. Set up environment variables
+### 3. Configure environment variables
 Copy `.env.example` to `.env`:
 ```bash
 copy .env.example .env
@@ -78,12 +135,13 @@ copy .env.example .env
 
 Add your Gemini API key (or OpenRouter key) in `.env`:
 ```env
-GEMINI_API_KEYS=your-api-key-here
+GEMINI_API_KEYS=your-gemini-api-key-here
 PORT=8000
 ```
-> **Note**: Even if your API key runs out or internet is disconnected, the app has built-in offline fallbacks so the viva simulation and architecture diagrams continue to work smoothly.
 
-### 4. Run the app
+> **Reliability Note**: The platform includes built-in offline blueprints and deterministic question fallbacks. Even if API limits are reached or network connectivity drops, the simulation and diagrams continue to operate without crashing.
+
+### 4. Start the server
 ```bash
 python app.py
 ```
@@ -92,5 +150,29 @@ Open **[http://localhost:8000](http://localhost:8000)** in your browser.
 
 ---
 
+## Project Structure
+
+```
+AI_VIVA_EXAMINER/
+├── index.html              # Project setup, file/zip upload & 1-click samples
+├── architecture.html       # Flow tracer simulation, viva traps & node inspector
+├── viva.html               # Live viva chamber with audio waveforms & avatar
+├── report.html             # Scorecard, authorship meter & revision cards
+├── mentor.html             # AI Viva Copilot doubt resolution lounge
+├── app.py                  # FastAPI application with dual-key LLM failover
+├── requirements.txt        # Python dependency manifest
+├── .env.example            # Environment variable template
+├── sample_projects/        # Built-in demo codebases
+│   ├── ecommerce_checkout.py
+│   ├── disease_prediction_ml.py
+│   └── jwt_auth_service.js
+└── static/
+    ├── css/style.css       # Clean SaaS styling, pulse animations & equalizer bars
+    └── js/app.js           # Flow simulation engine, voice controls & drawer logic
+```
+
+---
+
 ## License
-MIT License
+
+This project is licensed under the [MIT License](LICENSE).
